@@ -1,0 +1,699 @@
+Index: src/models/models.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/models/models.py b/src/models/models.py
+--- a/src/models/models.py	
++++ b/src/models/models.py	
+@@ -35,19 +35,27 @@
+     """
+     num_of_samples: int
+     bbox_selection_policy: str
+-    selection_strategy: str | None
+-    frames: List[FramePrediction] | None
++    selection_strategy: str
++    sort_strategy: str
++    frames: List[FramePrediction] = Field(max_items=10_000)
+ 
+     @validator('bbox_selection_policy')
+-    def validate_selection_strategy(cls, value):
+-        allowed = ['min', 'max', ]
++    def validate_bbox_selection_policy(cls, value):
++        allowed = ['min', 'max', 'sum', 'mean']
+         if value not in allowed:
+-            raise ValueError(f"allowed = {allowed}")
++            raise ValueError(f"allowed bbox_selection_policy = {allowed}")
+         return value
+ 
+-    @validator('bbox_selection_policy')
++    @validator('selection_strategy')
+     def validate_selection_strategy(cls, value):
+-        allowed = 'margin,least,ratio,entropy'.split(',')
++        allowed = 'margin,least,ratio,entropy,probability'.split(',')
++        if value not in allowed:
++            raise ValueError(f"allowed selection_strategy = {allowed}")
++        return value
++
++    @validator('sort_strategy')
++    def validate_sort_strategy(cls, value):
++        allowed = 'max,min'.split(',')
+         if value not in allowed:
+-            raise ValueError(f"allowed = {allowed}")
++            raise ValueError(f"allowed sort_strategy = {allowed}")
+         return value
+Index: src/models/embedding.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/models/embedding.py b/src/models/embedding.py
+--- a/src/models/embedding.py	
++++ b/src/models/embedding.py	
+@@ -14,6 +14,3 @@
+     id: str = Field(max_length=32)
+     image_embedding: List[float]
+ 
+-
+-class ImageEmbeddingModelRoot(BaseModel):
+-    __root__: ImageEmbeddingModel
+Index: src/handlers/detection.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/handlers/detection.py b/src/handlers/detection.py
+--- a/src/handlers/detection.py	
++++ b/src/handlers/detection.py	
+@@ -1,6 +1,8 @@
+ from requests import Session
+ 
++from src.configs.main_config import MainConfig
+ from src.handlers.abstract_handler import AbstractHandler
++from src.handlers.result import Result
+ from src.models.models import DetectionSamplingOnPremice
+ 
+ 
+@@ -8,9 +10,9 @@
+     def __init__(
+             self,
+             session: Session,
+-            dataset_id: str,
+     ):
+-        self.sub_url = f'dataset/{dataset_id}/sampling/detection/on-premice'
++        self.route = f'{MainConfig().main_url}'
++        self.result = Result(session)
+         super().__init__(session)
+ 
+     def sampling(self, config: DetectionSamplingOnPremice) -> str:
+@@ -18,4 +20,6 @@
+         :param config: request model
+         :return: result_id
+         """
+-        return self.session.send(self._post(sub_url=self.sub_url, json=config.dict())).json().get('result_id')
++        return self.session.send(
++            self._post(self.route + 'on-premice/sampling/detection', json=config.dict()),
++        ).json().get('result_id')
+Index: src/handlers/dataset.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/handlers/dataset.py b/src/handlers/dataset.py
+--- a/src/handlers/dataset.py	
++++ b/src/handlers/dataset.py	
+@@ -1,20 +1,34 @@
++from typing import List
++
+ from requests import Session
+ 
++from src.configs.main_config import MainConfig
+ from src.handlers.abstract_handler import AbstractHandler
++from src.handlers.detection import Detection
++from src.handlers.embedding import Embedding
++from src.handlers.result import Result
+ from src.models.dataset import DatasetModel, DatasetResponse
+ 
+ 
+ class Dataset(AbstractHandler):
+     def __init__(self, session: Session):
+-        self.dataset = DatasetModel
+-        self.sub_url = 'dataset'
++        self.dataset_request = DatasetModel
++        self.route = f'{MainConfig().main_url}/dataset'
++        self.dataset_id = None
++        self.result = Result(session)
++        self.embedding = Embedding(session, _is_not_second=False).monkey_patch_url
++        self.detection = Detection(session)
+         super().__init__(session)
+ 
+-    def _construct(self, name: str, description: str):
++    def __repr__(self):
++        return f'<dataset {self.dataset_id}>'
++
++    def _construct_request(self, name: str, description: str):
++        self.dataset_request = DatasetModel
+         if name is not None:
+-            self.dataset.dataset_name = name
++            self.dataset_request.dataset_name = name
+         if description is not None:
+-            self.dataset.dataset_description = description
++            self.dataset_request.dataset_description = description
+ 
+     def create(
+             self,
+@@ -27,13 +41,14 @@
+         :param description: the name of dataset
+         :return: id of dataset (dataset_id)
+         """
+-        self._construct(name, description)
+-        self._post(sub_url=self.sub_url)
+-        return self.session.send(self.prepare()).json().get('dataset_id')
++        self._construct_request(name, description)
++        self._post(url=self.route, json=self.dataset_request().dict())
++        self.dataset_id = self.send().json().get('dataset_id')
++        return self.dataset_id
+ 
+     def update(
+             self,
+-            dataset_id: str,
++            dataset_id: str = None,
+             name: str = None,
+             description: str = None,
+     ) -> DatasetResponse:
+@@ -44,33 +59,45 @@
+         :param description: the description of dataset
+         :return: DatasetResponse model with updates
+         """
+-        self._construct(name, description)
+-        self._put(params=self.dataset().dict(), sub_url=self.sub_url+f'/{dataset_id}')
+-        return DatasetResponse.parse_obj(self.session.send(self.prepare()).json())
++        dataset_id = self.set_dataset_id(dataset_id)
++        self._construct_request(name, description)
++        self.dataset_request.dataset_id = dataset_id
++        self._put(url=self.route+f'/{dataset_id}', json=self.dataset_request().dict(), )
++        self.dataset_request = DatasetModel.parse_obj(self.send().json())
++        return self.dataset_request
++
++    def set_dataset_id(self, dataset_id: str = None):
++        if dataset_id is None:
++            dataset_id = self.dataset_id
++        self.dataset_id = dataset_id
++        if self.dataset_id is None:
++            raise ValueError('dataset_id cannot be None')
++        return self.dataset_id
+ 
+     def get(
+             self,
+-            dataset_id: str,
++            dataset_id: str = None,
+     ) -> DatasetResponse:
+         """
+         this method returns a dataset name and description by dataset_id
+         :param dataset_id: id of dataset
+         :return: DatasetResponse model with updates
+         """
+-        self._get(sub_url=self.sub_url + f'/{dataset_id}')
+-        return DatasetResponse.parse_obj(self.session.send(self.prepare()).json())
++        dataset_id = self.set_dataset_id(dataset_id)
++        self._get(url=self.route+f'/{dataset_id}')
++        return DatasetModel.parse_obj(self.send().json())
+ 
+     def get_all(
+             self,
+             name: str = None,
+             description: str = None,
+-    ):
++    ) -> List[DatasetResponse]:
+         """
+         this method returns a dataset name and description by dataset_id
+         :param name: the name of dataset. regexp
+         :param description: the description of dataset. regexp
+         :return: DatasetResponse model with updates
+         """
+-        self._construct(name, description)
+-        self._get(sub_url=self.sub_url+'/all', params=self.dataset().dict())
+-        return DatasetResponse.parse_obj(self.session.send(self.prepare()).json())
++        self._construct_request(name, description)
++        self._get(url=self.route+'s/all', params=self.dataset_request().dict())
++        return [DatasetResponse.parse_obj(i) for i in self.send().json()]
+Index: src/handlers/embedding.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/handlers/embedding.py b/src/handlers/embedding.py
+--- a/src/handlers/embedding.py	
++++ b/src/handlers/embedding.py	
+@@ -1,5 +1,7 @@
+ from typing import List
+ from requests import Session, Response
++
++from src.configs.main_config import MainConfig
+ from src.handlers.abstract_handler import AbstractHandler
+ from src.models.embedding import ImageEmbeddingModel
+ 
+@@ -8,39 +10,84 @@
+     def __init__(
+             self,
+             session: Session,
+-            dataset_id: str,
+-            type_of_dataset: str
++            dataset_id: str = None,
++            type_of_dataset: str = None,
++            _is_not_second=True
+     ):
+-        self.sub_url = f'dataset/{dataset_id}/{type_of_dataset}/'
++        if _is_not_second and dataset_id is None:
++            raise ValueError('dataset_id must be not None')
++        if _is_not_second and type_of_dataset is None:
++            raise ValueError('type_of_dataset must be not None')
++
++        self.route = f'{MainConfig().main_url}/dataset/{dataset_id}/{type_of_dataset}/'
+         super().__init__(session)
+ 
+-    def _construct_sub_url(self, embedding_id: str = None):
+-        self.sub_url += f'embedding/{embedding_id}' if embedding_id else '/embeddings'
++    def monkey_patch_url(self, dataset_id: str, type_of_dataset: str, ) -> None:
++        self.route = f'{MainConfig().main_url}/dataset/{dataset_id}/{type_of_dataset}/'
++        return self
+ 
+-    def get_all(self, limit: int = 100) -> ImageEmbeddingModel:
+-        self._construct_sub_url()
+-        return self._send_request('get', params={'limit': limit}).json()
++    def get_many(self, start_limit: int = 0, stop_limit: int = 1000) -> ImageEmbeddingModel:
++        """
++        :param start_limit: upper limit of items
++        :param stop_limit: lower limit of items
++        :return: List[ImageEmbeddingModel]
++        """
++        self._get(self.route + '/embeddings', params={'start_limit': start_limit, 'stop_limit': stop_limit})
++        return [ImageEmbeddingModel.parse_obj(i) for i in self.send().json()]
+ 
+-    def get_by_id(self, limit: int = 100) -> ImageEmbeddingModel:
+-        self._construct_sub_url()
+-        return self._send_request('get', params={'limit': limit}).json()
++    def get_by_id(self, embedding_id: str, ) -> ImageEmbeddingModel:
++        """
++        :param embedding_id: id of embedding
++        :return: ImageEmbeddingModel
++        """
++        self._get(self.route + f'/embedding/{embedding_id}')
++        return [ImageEmbeddingModel.parse_obj(i) for i in self.send().json()]
+ 
+-    def upload_all(self, embeddings: List[ImageEmbeddingModel]) -> Response:
+-        self._construct_sub_url()
+-        return self._send_request('post', json_payload=[i.dict() for i in embeddings])
++    def upload_many(self, embeddings: List[ImageEmbeddingModel]) -> Response:
++        """
++        :param embeddings: List[ImageEmbeddingModel]
++        :return: Response, This method does not return anything useful to use, but performs an action
++        """
++        self._post(self.route + f'/embeddings', json=[i.dict() for i in embeddings])
++        return self.send()
+ 
+     def upload_by_id(self, embedding_id: str, embedding: ImageEmbeddingModel) -> Response:
+-        self._construct_sub_url(embedding_id)
+-        return self._send_request('post', json_payload=embedding)
++        """
++        :param embedding: List[ImageEmbeddingModel]
++        :param embedding_id: id of embedding
++        :return: Response, This method does not return anything useful to use, but performs an action
++        """
++        self._post(self.route + f'/embedding/{embedding_id}', json=embedding.dict())
++        return self.send()
+ 
+-    def update_all(self, embeddings: List[ImageEmbeddingModel]) -> Response:
+-        self._construct_sub_url()
+-        return self._send_request('put', json_payload=[i.dict() for i in embeddings])
++    def update_many(self, embeddings: List[ImageEmbeddingModel]) -> Response:
++        """
++        :param embeddings: List[ImageEmbeddingModel]
++        :return: Response, This method does not return anything useful to use, but performs an action
++        """
++        self._put(self.route + f'/embeddings', json=[i.dict() for i in embeddings])
++        return self.send()
+ 
+     def update_by_id(self, embedding_id: str, embedding: ImageEmbeddingModel) -> Response:
+-        self._construct_sub_url(embedding_id)
+-        return self._send_request('put', json_payload=embedding.dict())
++        """
++        :param embedding: List[ImageEmbeddingModel]
++        :param embedding_id: id of embedding
++        :return: Response, This method does not return anything useful to use, but performs an action
++        """
++        self._put(self.route + f'/embedding/{embedding_id}', json=embedding.dict())
++        return self.send()
+ 
+     def delete_all(self) -> Response:
+-        self._construct_sub_url()
+-        return self._send_request('delete')
++        """
++        :return: Response, This method does not return anything useful to use, but performs an action
++        """
++        self._delete(self.route + f'/embeddings')
++        return self.send()
++
++    def delete_by_id(self, embedding_id: str) -> Response:
++        """
++        :param embedding_id: id of embedding
++        :return: Response, This method does not return anything useful to use, but performs an action
++        """
++        self._delete(self.route + f'/embedding/{embedding_id}')
++        return self.send()
+Index: src/handlers/result.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/handlers/result.py b/src/handlers/result.py
+--- a/src/handlers/result.py	
++++ b/src/handlers/result.py	
+@@ -8,9 +8,8 @@
+     def __init__(
+             self,
+             session: Session,
+-            dataset_id: str,
+     ):
+-        self.sub_url = f'dataset/{dataset_id}'
++        self.route = f'http://127.0.0.1:9940/api/result'
+         super().__init__(session)
+ 
+     def get_result(self, result_id: str) -> ResultResponse:
+@@ -18,13 +17,13 @@
+         :param result_id: id of result
+         :return: ResultResponse
+         """
+-        self.sub_url += f'/result/{result_id}'
+-        return ResultResponse.parse_obj(self._send_request('get', ).json())
++        self._get(self.route + f'/{result_id}')
++        return ResultResponse.parse_obj(self.send().json())
+ 
+     def get_results(self, limit=100):
+         """
+         :param limit: limit of returned objects
+         :return:
+         """
+-        self.sub_url += '/results'
+-        return [ResultResponse.parse_obj(i) for i in self._send_request('get', params={'limit': limit}).json()]
++        self._get(self.route + 's', params={'limit': limit})
++        return [ResultResponse.parse_obj(i) for i in self.send().json()]
+Index: src/handlers/abstract_handler.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/handlers/abstract_handler.py b/src/handlers/abstract_handler.py
+--- a/src/handlers/abstract_handler.py	
++++ b/src/handlers/abstract_handler.py	
+@@ -2,13 +2,13 @@
+ 
+ 
+ class AbstractHandler(Request):
+-    def __init__(self, session: Session):
++    def __init__(self, session: Session, sub: str = '', url=''):
+         self.session = session
+-        self.sub_url = None
++        self.sub = sub
+         super().__init__(
+             method=None,
+-            url='http://cval.ai/api',
+-            headers=Session.headers,
++            url=url,
++            headers=session.headers,
+             files=None,
+             data=None,
+             params=None,
+@@ -18,31 +18,30 @@
+             json=None,
+         )
+ 
+-    def _get(self, sub_url=None, params=None):
+-        self.url += sub_url
++    def _get(self, url: str, params=None):
++        self.url = url
+         self.method = 'get'
+         self.params = params
+ 
+-    def _delete(self, sub_url=None, params=None):
+-        self._get(params=params, sub_url=sub_url)
++    def _delete(self, url: str, params=None):
++        self._get(url, params=params)
+         self.method = 'delete'
+ 
+-    def _post(self, json=None, sub_url=None, params=None):
+-        self._get(sub_url=sub_url, params=params)
++    def _post(self, url: str, json=None, params=None):
++        self._get(url, params=params)
+         self.method = 'post'
+         self.json = json
+ 
+-    def _put(self, json=None, sub_url=None, params=None):
+-        self._post(json, sub_url, params)
++    def _put(self, url: str, json=None, params=None):
++        self._post(url, json, params)
+         self.method = 'put'
+ 
+-    def _send_request(self, method: str, json_payload=None, params=None) -> Response:
+-        self._get(params=params, sub_url=self.sub_url)
+-        if method == 'post':
+-            self._post(json=json_payload, sub_url=self.sub_url)
+-        elif method == 'put':
+-            self._put(json=json_payload, sub_url=self.sub_url)
+-        elif method == 'delete':
+-            self._delete(sub_url=self.sub_url)
+-        return self.session.send(self.prepare())
++    @staticmethod
++    def validate_response(resp: Response):
++        if resp.status_code >= 400:
++            raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
+ 
++    def send(self):
++        resp = self.session.send(self.prepare())
++        self.validate_response(resp)
++        return resp
+Index: src/connection.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/connection.py b/src/connection.py
+--- a/src/connection.py	
++++ b/src/connection.py	
+@@ -8,7 +8,6 @@
+ 
+ class CVALConnection:
+     def __init__(self, user_api_key: str):
+-        self._base_url = 'https://cval.ai/api'
+         self._session = Session()
+         self._session.headers = {'user_api_key': user_api_key}
+ 
+@@ -28,19 +27,17 @@
+         """
+         return Embedding(self._session, dataset_id=dataset_id, type_of_dataset=type_of_dataset)
+ 
+-    def detection(self, dataset_id: str):
++    def detection(self, ):
+         """
+         This method can be used to call a detection sampling or test
+-        :param dataset_id: 
+         :return: Detection
+         """
+-        return Detection(self._session, dataset_id)
++        return Detection(self._session)
+ 
+-    def result(self, dataset_id: str):
++    def result(self):
+         """
+         This method can be used for polling
+-        :param dataset_id: id of dataset
+         :return: Result
+         """
+-        return Result(self._session, dataset_id=dataset_id)
++        return Result(self._session)
+ 
+Index: src/configs/main_config.py
+===================================================================
+diff --git a/src/configs/main_config.py b/src/configs/main_config.py
+new file mode 100644
+--- /dev/null	
++++ b/src/configs/main_config.py	
+@@ -0,0 +1,5 @@
++from src.patterns.singleton import Singleton
++
++
++class MainConfig(metaclass=Singleton):
++    main_url = 'cval.ai'
+Index: src/examples/result.py
+===================================================================
+diff --git a/src/examples/result.py b/src/examples/result.py
+new file mode 100644
+--- /dev/null	
++++ b/src/examples/result.py	
+@@ -0,0 +1,7 @@
++from src.connection import CVALConnection
++
++if __name__ == '__main__':
++    api_key = 'a42a3a750b2dfab2f90ef64e75ba99a7c49a6c3f427d762236459d87e6766af1'
++    cval = CVALConnection(api_key)
++    print(cval.result().get_results())
++    cval.result().get_result(cval.result().get_results()[0].result_id)
+Index: src/examples/dataset.py
+===================================================================
+diff --git a/src/examples/dataset.py b/src/examples/dataset.py
+new file mode 100644
+--- /dev/null	
++++ b/src/examples/dataset.py	
+@@ -0,0 +1,14 @@
++from src.connection import CVALConnection
++if __name__ == '__main__':
++    api_key = 'a42a3a750b2dfab2f90ef64e75ba99a7c49a6c3f427d762236459d87e6766af1'
++    cval = CVALConnection(api_key)
++    ds = cval.dataset()
++    ds_id = ds.create()
++    print(ds_id)
++    update = ds.update()
++    print(update)
++    get = ds.get()
++    print(get)
++    get = ds.get(ds_id)
++    print(get)
++    print(ds.get_all())
+Index: src/examples/monkey_patch.py
+===================================================================
+diff --git a/src/examples/monkey_patch.py b/src/examples/monkey_patch.py
+new file mode 100644
+--- /dev/null	
++++ b/src/examples/monkey_patch.py	
+@@ -0,0 +1,8 @@
++from src.connection import CVALConnection
++
++if __name__ == '__main__':
++    api_key = 'a42a3a750b2dfab2f90ef64e75ba99a7c49a6c3f427d762236459d87e6766af1'
++    cval = CVALConnection(api_key)
++    ds = cval.dataset()
++    ds.create()
++    ds.result.get_results()
+Index: src/patterns/singleton.py
+===================================================================
+diff --git a/src/patterns/singleton.py b/src/patterns/singleton.py
+new file mode 100644
+--- /dev/null	
++++ b/src/patterns/singleton.py	
+@@ -0,0 +1,8 @@
++class Singleton(type):
++    _instances = {}
++
++    def __call__(cls, *args, **kwargs):
++        if cls not in cls._instances:
++            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
++        return cls._instances[cls]
++
+Index: build.sh
+===================================================================
+diff --git a/build.sh b/build.sh
+new file mode 100644
+--- /dev/null	
++++ b/build.sh	
+@@ -0,0 +1,1 @@
++python setup.py sdist --formats=zip,gztar,bztar,ztar,tar
+\ No newline at end of file
+diff --git a/src/configs/__init__.py b/src/configs/__init__.py
+new file mode 100644
+diff --git a/src/examples/__init__.py b/src/examples/__init__.py
+new file mode 100644
+diff --git a/src/patterns/__init__.py b/src/patterns/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/models/models.py b/venv/lib/python3.10/site-packages/src/models/models.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/models/result.py b/venv/lib/python3.10/site-packages/src/models/result.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/models/dataset.py b/venv/lib/python3.10/site-packages/src/models/dataset.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/models/__init__.py b/venv/lib/python3.10/site-packages/src/models/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/models/embedding.py b/venv/lib/python3.10/site-packages/src/models/embedding.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/configs/__init__.py b/venv/lib/python3.10/site-packages/src/configs/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/configs/main_config.py b/venv/lib/python3.10/site-packages/src/configs/main_config.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/examples/result.py b/venv/lib/python3.10/site-packages/src/examples/result.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/examples/dataset.py b/venv/lib/python3.10/site-packages/src/examples/dataset.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/examples/__init__.py b/venv/lib/python3.10/site-packages/src/examples/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/examples/monkey_patch.py b/venv/lib/python3.10/site-packages/src/examples/monkey_patch.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/result.py b/venv/lib/python3.10/site-packages/src/handlers/result.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/__async.py b/venv/lib/python3.10/site-packages/src/handlers/__async.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/dataset.py b/venv/lib/python3.10/site-packages/src/handlers/dataset.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/__init__.py b/venv/lib/python3.10/site-packages/src/handlers/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/detection.py b/venv/lib/python3.10/site-packages/src/handlers/detection.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/embedding.py b/venv/lib/python3.10/site-packages/src/handlers/embedding.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/handlers/abstract_handler.py b/venv/lib/python3.10/site-packages/src/handlers/abstract_handler.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/patterns/__init__.py b/venv/lib/python3.10/site-packages/src/patterns/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/patterns/singleton.py b/venv/lib/python3.10/site-packages/src/patterns/singleton.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/__init__.py b/venv/lib/python3.10/site-packages/src/__init__.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/src/connection.py b/venv/lib/python3.10/site-packages/src/connection.py
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/top_level.txt b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/top_level.txt
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/direct_url.json b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/direct_url.json
+new file mode 100644
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/WHEEL b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/WHEEL
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/RECORD b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/RECORD
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/METADATA b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/METADATA
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/INSTALLER b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/INSTALLER
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/REQUESTED b/venv/lib/python3.10/site-packages/cval_lib-0.0.1.dist-info/REQUESTED
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/dist/cval-lib-0.0.1.tar b/dist/cval-lib-0.0.1.tar
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/dist/cval-lib-0.0.1.zip b/dist/cval-lib-0.0.1.zip
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/dist/cval-lib-0.0.1.tar.gz b/dist/cval-lib-0.0.1.tar.gz
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/dist/cval-lib-0.0.1.tar.bz2 b/dist/cval-lib-0.0.1.tar.bz2
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+GIT binary patch
+literal 0
+Hc$@<O00001
+
