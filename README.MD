@@ -1,15 +1,12 @@
 <!-- TOP OF README ANCHOR -->
 <a name="top"></a>
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <p>
     <img src="https://github.com/fangorntreabeard/cval-lib/blob/main/logo/logo.jpg?raw=true" alt="Cval logo" width="155" height="155">
   </p>
-
 <h3 align="center">CVAL REST API LIBRARY</h3>
-
   <p align="center">
     A library designed to interact with the REST-API cval.ai
     <br/>
@@ -80,8 +77,7 @@ USER_API_KEY='awesome_api_key'
 cval = CVALConnection(api_key)
 ```
 
-> The same actions are available with the rest of the entities, but there are some nuances, for example, somewhere there is the use of models, and somewhere only parameters. But anyway, these examples well reflect possible scenarios when working with cval. 
-> The most typical api scenario is a dataset, so let's start with it.
+> The same actions are available with the rest of the entities, but there are some nuances, for example, somewhere there is the use of models, and somewhere only parameters. But anyway, these examples well reflect possible scenarios when working with cval. The most typical api scenario is a dataset, so let's start with it.
 
 ### Dataset
  > Within the framework of the created system, datasets are spaces in which data for machine learning is stored.
@@ -106,7 +102,11 @@ ds.update(name='sample name')
 ds.get()
 ```
 
+> A further example of using the library concerns embedding. Since embedding is a large data object and the method of its creation is completely defined by the user, the embedding method works through query schemes (models).
+
 ### Embeddings
+
+> Embeddings are vector representations of images obtained using pytorch or any other library
 
 ##### Create embeddings
 
@@ -124,73 +124,25 @@ embeddings = [
 ]
 ```
 
-##### Upload embeddings
+
+##### Upload & check embeddings
 ```python
 emb = cval.embedding(ds_id)
 emb.upload_many(embeddings)
 print(emb.get_many())
 ```
 
-##### Allow some access to global variables
+> The following example is used to invoke active learning
+
+### Active learning
+##### Construct config
+
 ```python
+from cval_lib.models.detection import DetectionSamplingOnPremise
+response_model = DetectionSamplingOnPremise(num_of_samples=200, bbox_selection_policy='min')
 ```
 
-###### Output:
-```text
-bar
-```
-
-##### Allow access to all global variables
+##### Run active learning
 ```python
-foo = "bar"
-bar = "foo"
-
-def foobar():
-    cval('print(bar+foo")', globals=globals(), allowed_global_vars=["*"], allowed_calls=["print"])
-foobar()
-```
-
-###### Output:
-```text
-foobar
-```
-
-##### Block access local variables
-```python
-def fizzbuzz():
-    fizz = "buzz"
-    cval('print(fizz)', locals=locals())  # Will not be able to access "fizz"
-fizzbuzz()
-```
-
-###### Output:
-```text
-cval.SuspiciousSource: Cval found local variable "fizz" in the source, killing for safety.
-```
-
-##### Allow some access to local variables
-```python
-def fizzbuzz():
-    fizz = "buzz"
-    cval('print(fizz)', locals=locals(), allowed_local_vars=["fizz"], allowed_calls=["print"])
-fizzbuzz()
-```
-
-###### Output:
-```text
-buzz
-```
-
-##### Allow access to all local variables
-```python
-def fizzbuzz():
-    fizz = "buzz"
-    buzz = "fizz"
-    cval('print(buzz+fizz)', locals=locals(), allowed_local_vars=["*"], allowed_calls=["print"])
-fizzbuzz()
-```
-
-###### Output:
-```text
-fizzbuzz
+emb = cval.detection().on_premise_sampling(response_model)
 ```

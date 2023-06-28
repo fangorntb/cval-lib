@@ -17,12 +17,14 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 
 from requests import Session
 
-from cval_lib.handlers.abstract_handler import AbstractHandler
+from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.models.result import ResultResponse
 
 
 class Result(AbstractHandler):
-
+    """
+    The result is the entity in which the processing data is stored
+    """
     def __init__(
             self,
             session: Session,

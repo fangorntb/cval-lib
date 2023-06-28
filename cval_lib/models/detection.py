@@ -38,7 +38,7 @@ class FramePrediction(BaseModel):
     predictions: List[BBoxScores]
 
 
-class DetectionSamplingOnPremice(BaseModel):
+class DetectionSamplingOnPremise(BaseModel):
     """
     :param num_of_samples: absolute number of samples to select
     :param bbox_selection_policy:

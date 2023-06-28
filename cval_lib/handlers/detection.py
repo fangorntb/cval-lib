@@ -18,9 +18,9 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 from requests import Session
 
 from cval_lib.configs.main_config import MainConfig
-from cval_lib.handlers.abstract_handler import AbstractHandler
+from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.handlers.result import Result
-from cval_lib.models.models import DetectionSamplingOnPremice
+from cval_lib.models.detection import DetectionSamplingOnPremise
 
 
 class Detection(AbstractHandler):
@@ -32,7 +32,7 @@ class Detection(AbstractHandler):
         self.result = Result(session)
         super().__init__(session)
 
-    def on_premice_sampling(self, config: DetectionSamplingOnPremice) -> str:
+    def on_premise_sampling(self, config: DetectionSamplingOnPremise) -> str:
         """
         :param config: request model
         :return: result_id

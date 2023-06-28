@@ -19,12 +19,12 @@ from typing import List
 
 from requests import Session
 
-from src.configs.main_config import MainConfig
-from src.handlers.abstract_handler import AbstractHandler
-from src.handlers.detection import Detection
-from src.handlers.embedding import Embedding
-from src.handlers.result import Result
-from src.models.dataset import DatasetModel, DatasetResponse
+from cval_lib.configs.main_config import MainConfig
+from cval_lib.handlers._abstract_handler import AbstractHandler
+from cval_lib.handlers.detection import Detection
+from cval_lib.handlers.embedding import Embedding
+from cval_lib.handlers.result import Result
+from cval_lib.models.dataset import DatasetModel, DatasetResponse
 
 
 class Dataset(AbstractHandler):

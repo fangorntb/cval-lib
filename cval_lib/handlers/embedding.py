@@ -19,7 +19,7 @@ from typing import List
 from requests import Session, Response
 
 from cval_lib.configs.main_config import MainConfig
-from cval_lib.handlers.abstract_handler import AbstractHandler
+from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.models.embedding import ImageEmbeddingModel
 
 
