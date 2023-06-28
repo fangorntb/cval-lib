@@ -172,5 +172,15 @@ response_model = DetectionSamplingOnPremise(
 
 ##### Run active learning
 ```python3
-emb = cval.detection().on_premise_sampling(response_model)
+emb = cval.detection()
+print(emd.on_premise_sampling(response_model))
+```
+
+##### Polling
+```python3
+result = None
+
+while result is None:
+    emb.result.get_result()
+print(emb.result.get_result())
 ```
