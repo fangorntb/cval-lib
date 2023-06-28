@@ -51,7 +51,6 @@ or downloaded:
 python3 -m pip install cval-lib.tar
 ```
 
-
 #### Windows
 ```powershell
 py -m pip install cval-lib
@@ -65,8 +64,11 @@ python3 -m pip install cval-lib.tar
 ```shell
 git submodule add https://github.com/fangorntreabeard/cval-lib.git cval
 ```
-## Exploiting
-I **encourage** you to break my script, report any bugs or vulnerabilities [here](https://github.com/ZackeryRSmith/cval/issues), thanks!
+## Architecture
+The library architecture consists of three layers:
+1. A layer of protocols and abstract handlers. Responsible for the use of a particular library. If an error is found, it is enough to simply change one method.
+2. A layer of handlers. These are all the methods that are present in the API. Are based on abstract
+3. Model layer. If the data structure changes, only this layer changes.
 
 ## Examples
 These examples are focused purely on security rather then real world practical examples.
