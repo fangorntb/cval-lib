@@ -23,14 +23,13 @@ jobs:
         with:
           path: ~/
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
       - name: Build a binary wheel and a source tarball
         run: |
-          pipenv run build
+          bash build.sh
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
