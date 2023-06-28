@@ -175,12 +175,16 @@ response_model = DetectionSamplingOnPremise(
 emb = cval.detection()
 print(emd.on_premise_sampling(response_model))
 ```
-
+> The following method is most relevant when we are dealing with long-term tasks and, accordingly, with asynchronous interaction.
 ##### Polling
+> refers to actively sampling the status of an external device by a client program as a synchronous activity.
 ```python3
+from time import sleep
 result = None
-
+sleep_sec = 1
 while result is None:
-    emb.result.get_result()
-print(emb.result.get_result())
+    result = emb.result.get_result()
+    sleep(sleep_sec)
+    sleep_sec *= 2
+print(result)
 ```
