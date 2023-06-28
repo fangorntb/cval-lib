@@ -4,27 +4,33 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/ZackeryRSmith/cval">
-    <img src="https://raw.githubusercontent.com/ZackeryRSmith/cval/main/cval.png" alt="Cval logo" width="155" height="155">
-  </a>
+  <p>
+    <img src="https://github.com/fangorntreabeard/cval-lib/blob/main/logo/logo.jpg?raw=true" alt="Cval logo" width="155" height="155">
+  </p>
 
-<h3 align="center">Cval</h3>
+<h3 align="center">CVAL REST API LIBRARY</h3>
 
   <p align="center">
-    A layer of protection for eval
+    ###
     <br />
     <b>
-      <a href="https://github.com/ZackeryRSmith/cval/#examples">View Examples</a>
+      <a href="https://cval.ai">REST API docs</a>
       ·
-      <a href="https://github.com/ZackeryRSmith/cval/issues">Report Bug</a>
+      <a href="https://github.com/fangorntreabeard/cval-lib/issues">Report Bug</a>
     </b>
   </p>
 </div>
 
-## About
+# About
 A decently simple script that uses regular expression to add a layer of protection to eval. Why? Well I keep seeing *"eval really is dangerous"* and *"eval is a bad practice"*. All these statements have some validity to them, and there is almost always a better way to do what you want to acomplish. Cval tackles the *"eval really is dangerous"* mindset, if you must use eval for a public project use cval.
 
-# Installation
+# Getting started
+
+To start using the CVAL Rest API, you need to obtain a client API key. 
+Once you have your API key, you can use it to authenticate your requests and interact with the CVAL Rest API endpoints. 
+Refer to our API documentation for detailed information on available endpoints, request formats, and response structures.
+
+## Installation
 
 #### Unix and Mac
 ```shell
