@@ -10,7 +10,7 @@ setup(
     author='DGQ',
     author_email='gward@python.net',
     url='https://cval.ai',
-    packages=find_packages(include=['src', 'src.*']),
+    packages=find_packages(include=['cval_lib', 'src']),
     install_requires=[
         'pydantic',
         'requests'

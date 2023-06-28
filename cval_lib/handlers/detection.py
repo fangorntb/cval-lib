@@ -17,10 +17,10 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 
 from requests import Session
 
-from src.configs.main_config import MainConfig
-from src.handlers.abstract_handler import AbstractHandler
-from src.handlers.result import Result
-from src.models.models import DetectionSamplingOnPremice
+from cval_lib.configs.main_config import MainConfig
+from cval_lib.handlers.abstract_handler import AbstractHandler
+from cval_lib.handlers.result import Result
+from cval_lib.models.models import DetectionSamplingOnPremice
 
 
 class Detection(AbstractHandler):

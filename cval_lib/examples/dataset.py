@@ -1,4 +1,4 @@
-from src.connection import CVALConnection
+from cval_lib.connection import CVALConnection
 
 
 

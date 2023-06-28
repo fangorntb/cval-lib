@@ -1,9 +1,9 @@
 from requests import Session
 
-from src.handlers.dataset import Dataset
-from src.handlers.embedding import Embedding
-from src.handlers.detection import Detection
-from src.handlers.result import Result
+from cval_lib.handlers.dataset import Dataset
+from cval_lib.handlers.embedding import Embedding
+from cval_lib.handlers.detection import Detection
+from cval_lib.handlers.result import Result
 
 
 class CVALConnection:

@@ -35,7 +35,7 @@ Repeat this process until you achieve an acceptable quality of the model.
 
 # Getting started
 
-To start using the CVAL Rest API, you need to obtain a client API key. 
+To start using the CVAL Rest API, you need to **obtain** a **client/user API key**. 
 Once you have your API key, you can use it to authenticate your requests and interact with the CVAL Rest API endpoints. 
 Refer to our API documentation for detailed information on available endpoints, request formats, and response structures.
 
@@ -65,78 +65,74 @@ python3 -m pip install cval-lib.tar
 git submodule add https://github.com/fangorntreabeard/cval-lib.git cval
 ```
 ## Architecture
-The library architecture consists of three layers:
-1. A layer of protocols and abstract handlers. Responsible for the use of a particular library. If an error is found, it is enough to simply change one method.
-2. A layer of handlers. These are all the methods that are present in the API. Are based on abstract
-3. Model layer. If the data structure changes, only this layer changes.
+The library architecture consists of **three layers**:
+1. _A layer of protocols and abstract handlers_. Responsible for the use of a particular library. If an error is found, it is enough to simply change one method.
+2. _A layer of handlers._ These are all the methods that are present in the API. Are based on abstract
+3. _Model layer._ If the data structure changes, only this layer changes.
 
 ## Examples
-These examples are focused purely on security rather then real world practical examples.
 
-##### Set
+##### Set your user_api_key
 
-```python
-# :NOTE: modules is False by default, and the reason we allow function calls
-#        is to see the error given when trying to import a module.
-cval('__import__("os")', calls=True, modules=False)
+```python3
+from cval_lib import CVALConnection
+USER_API_KEY='awesome_api_key'
+cval = CVALConnection(api_key)
 ```
 
+> The same actions are available with the rest of the entities, but there are some nuances, for example, somewhere there is the use of models, and somewhere only parameters. But anyway, these examples well reflect possible scenarios when working with cval. 
+> The most typical api scenario is a dataset, so let's start with it.
 
+### Dataset
+ > Within the framework of the created system, datasets are spaces in which data for machine learning is stored.
+ Creating a dataset is similar to creating a folder.
 ##### Create dataset
+```python3
+# :NOTE: To avoid incomprehensibility of errors, it is recommended to use  CVALConnection
+ds_id = cval.dataset().create(name='on-premise-scheme-ds', description='')
+print(ds_id)
+```
+
+##### Update dataset
 ```python
-# :NOTE: modules is False by default, and the reason we allow function calls
-#        is to see the error given when trying to import a module.
-cval('__import__("os")', calls=True, modules=False)
+ds = cval.dataset()
+ds.update(ds_id, description='any string data')
+# :NOTE: the dataset can store the state (ds_id)
+ds.update(name='sample name')
 ```
 
-###### Output:
-```text
-cval.IllegalSource: Cval panicked due to an attempted illegal import of the module "os"
-```
-
-##### Allow certain modules
+##### Get dataset
 ```python
-cval('__import__("os")', allowed_modules=["os"], allowed_calls=["import"])
+ds.get()
 ```
 
-##### Disable function calls
+### Embeddings
+
+##### Create embeddings
+
 ```python
-cval('print("Hello, World!")', calls=False)
+from random import random
+import uuid
+from cval_lib.models.embedding import ImageEmbeddingModel
+
+img_id_1 = str(uuid.uuid4())
+img_id_2 = str(uuid.uuid4())
+
+embeddings = [
+ ImageEmbeddingModel(id=img_id_1, image_embedding=list(map(random, range(1000)))), 
+ ImageEmbeddingModel(id=img_id_2, image_embedding=list(map(random, range(1000)))),
+]
 ```
 
-###### Output:
-```text
-cval.IllegalSource: Cval panicked due to an illegal function call in source! Attemped call to "print"
-```
-
-##### Allow certain function calls
+##### Upload embeddings
 ```python
-cval('print("Hello, World!")', allowed_calls=["print"])
-```
-
-##### Block access to global variables
-```python
-foo = "bar"
-
-def foobar():
-    # :NOTE: `globals` doesn't need to be passed in this case
-    #        this is only done here for clarity 
-    cval('print(foo)', globals=globals(), allowed_calls=["print"])  # Will not be able to access "foo"
-foobar()
-```
-
-###### Output:
-```text
-cval.SuspiciousSource: Cval found global variable "foo" in the source, killing for safety.
+emb = cval.embedding(ds_id)
+emb.upload_many(embeddings)
+print(emb.get_many())
 ```
 
 ##### Allow some access to global variables
 ```python
-foo = "bar"
-
-def foobar():
-    cval('print(foo)', globals=globals(), allowed_global_vars=["foo"], allowed_calls=["print"])
-foobar()
 ```
 
 ###### Output:
