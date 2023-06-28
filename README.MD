@@ -92,14 +92,14 @@ print(ds_id)
 ##### Update dataset
 ```python
 ds = cval.dataset()
-ds.update(ds_id, description='any string data')
+print(ds.update(ds_id, description='any string data'))
 # :NOTE: the dataset can store the state (ds_id)
 ds.update(name='sample name')
 ```
 
 ##### Get dataset
 ```python
-ds.get()
+print(ds.get())
 ```
 
 > A further example of using the library concerns embedding. Since embedding is a large data object and the method of its creation is completely defined by the user, the embedding method works through query schemes (models).
@@ -143,7 +143,7 @@ import random
 import uuid
 from cval_lib.models.detection import BBoxScores, FramePrediction
 
-# example only
+# :NOTE: example only
 frames_predictions = list(
   map(
   lambda x: FramePrediction(
