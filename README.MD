@@ -53,7 +53,7 @@ python3 -m pip install cval-lib.tar
 
 #### Windows
 ```powershell
-py -m pip install cval-lib
+python -m pip install cval-lib
 ```
 or downloaded:
 ```shell
@@ -73,7 +73,16 @@ The library architecture consists of three layers:
 ## Examples
 These examples are focused purely on security rather then real world practical examples.
 
-##### Disable module importing
+##### Set
+
+```python
+# :NOTE: modules is False by default, and the reason we allow function calls
+#        is to see the error given when trying to import a module.
+cval('__import__("os")', calls=True, modules=False)
+```
+
+
+##### Create dataset
 ```python
 # :NOTE: modules is False by default, and the reason we allow function calls
 #        is to see the error given when trying to import a module.
