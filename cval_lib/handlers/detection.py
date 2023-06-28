@@ -37,6 +37,7 @@ class Detection(AbstractHandler):
         :param config: request model
         :return: result_id
         """
-        return self.session.send(
+        self.result.result_id = self.session.send(
             self._post(self.route + 'on-premice/sampling/detection', json=config.dict()),
         ).json().get('result_id')
+        return self.result.result_id

@@ -30,20 +30,30 @@ class Result(AbstractHandler):
             session: Session,
     ):
         self.route = f'http://127.0.0.1:9940/api/result'
+        self.result_id = None
         super().__init__(session)
 
-    def get_result(self, result_id: str) -> ResultResponse:
+    def _set_result_id(self, result_id: str = None):
+        if result_id is None:
+            result_id = self.result_id
+        if result_id is None:
+            raise ValueError('result_id cannot be None')
+        self.result_id = result_id
+
+    def get_result(self, result_id: str = None) -> ResultResponse:
         """
         :param result_id: id of result
         :return: ResultResponse
         """
-        self._get(self.route + f'/{result_id}')
+        self._set_result_id(result_id)
+        self._get(self.route + f'/{self.result_id}')
         return ResultResponse.parse_obj(self.send().json())
 
-    def get_results(self, limit=100):
+    def get_results(self, dataset_id: str = None, limit=100, ):
         """
+        :param dataset_id: id of dataset
         :param limit: limit of returned objects
         :return:
         """
-        self._get(self.route + 's', params={'limit': limit})
+        self._get(self.route + 's', params={'limit': limit, 'dataset_id': dataset_id if dataset_id else 'null'})
         return [ResultResponse.parse_obj(i) for i in self.send().json()]
