@@ -23,13 +23,13 @@
 
 # About
 
-With CVAL, you can iteratively improve your models by following our active learning loop.
+With CVAL, you can iteratively **improve your models** by following our active learning loop.
 
-> First, manually or semi-automatically annotate a random set of images.
+* **First**, manually or semi-automatically annotate a random set of images.
 
-> Next, train your model and use uncertainty and diversity methods to score the remaining images for annotation.
+* **Next**, train your model and use uncertainty and diversity methods to score the remaining images for annotation.
 
-> Then, manually or semi-automatically annotate the images marked as more confident to increase the accuracy of the model.
+* **Then**, manually or semi-automatically annotate the images marked as more confident to increase the accuracy of the model.
 
 Repeat this process until you achieve an acceptable quality of the model.
 
