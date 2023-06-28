@@ -1,7 +1,7 @@
 from src.connection import CVALConnection
 
 if __name__ == '__main__':
-    api_key = '425da17cea5c6573e3614ae938a594787aa130fd70531c6ff3618a85c637156f'
+    api_key = '1d770d0b3f5898ec9e24c5422480b2419b9363852fc14a2e8881de2c6e43b82a'
     cval = CVALConnection(api_key)
     ds = cval.dataset()
     ds.create()

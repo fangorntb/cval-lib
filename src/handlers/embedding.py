@@ -7,6 +7,10 @@ from src.models.embedding import ImageEmbeddingModel
 
 
 class Embedding(AbstractHandler):
+    """
+    Embeddings are vector representations of images
+    obtained using pytorch or any other library
+    """
     def __init__(
             self,
             session: Session,
