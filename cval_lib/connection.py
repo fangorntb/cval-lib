@@ -41,3 +41,6 @@ class CVALConnection:
         """
         return Result(self._session)
 
+    def __del__(self):
+        self._session.close()
+        del self

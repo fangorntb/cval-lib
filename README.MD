@@ -135,14 +135,42 @@ print(emb.get_many())
 > The following example is used to invoke active learning
 
 ### Active learning
+
+##### Get predictions data
+
+```python3
+import random
+import uuid
+from cval_lib.models.detection import BBoxScores, FramePrediction
+
+# example only
+frames_predictions = map(
+ lambda x: FramePrediction(
+ frame_id=str(uuid.uuid4()), 
+ predictions=list(map(lambda x: BBoxScores(category_id=str(uuid.uuid4()), random.random()), range(100)))
+ ), 
+ range(100)
+)
+
+print(frames_predictions)
+
+
+```
+
 ##### Construct config
 
-```python
+```python3
 from cval_lib.models.detection import DetectionSamplingOnPremise
-response_model = DetectionSamplingOnPremise(num_of_samples=200, bbox_selection_policy='min')
+response_model = DetectionSamplingOnPremise(
+ num_of_samples=200, 
+ bbox_selection_policy='min', 
+ selection_strategy='margin', 
+ sort_strategy='max',
+ frames=frames_predictions,
+)
 ```
 
 ##### Run active learning
-```python
+```python3
 emb = cval.detection().on_premise_sampling(response_model)
 ```
