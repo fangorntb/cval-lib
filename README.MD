@@ -11,8 +11,8 @@
 <h3 align="center">CVAL REST API LIBRARY</h3>
 
   <p align="center">
-    ###
-    <br />
+    A library designed to interact with the REST-API cval.ai
+    <br/>
     <b>
       <a href="https://cval.ai">REST API docs</a>
       ·
@@ -22,7 +22,16 @@
 </div>
 
 # About
-A decently simple script that uses regular expression to add a layer of protection to eval. Why? Well I keep seeing *"eval really is dangerous"* and *"eval is a bad practice"*. All these statements have some validity to them, and there is almost always a better way to do what you want to acomplish. Cval tackles the *"eval really is dangerous"* mindset, if you must use eval for a public project use cval.
+
+With CVAL, you can iteratively improve your models by following our active learning loop.
+
+> First, manually or semi-automatically annotate a random set of images.
+
+> Next, train your model and use uncertainty and diversity methods to score the remaining images for annotation.
+
+> Then, manually or semi-automatically annotate the images marked as more confident to increase the accuracy of the model.
+
+Repeat this process until you achieve an acceptable quality of the model.
 
 # Getting started
 
@@ -52,6 +61,10 @@ or downloaded:
 python3 -m pip install cval-lib.tar
 ```
 
+#### Submodule
+```shell
+git submodule add https://github.com/fangorntreabeard/cval-lib.git cval
+```
 ## Exploiting
 I **encourage** you to break my script, report any bugs or vulnerabilities [here](https://github.com/ZackeryRSmith/cval/issues), thanks!
 
