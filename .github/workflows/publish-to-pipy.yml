@@ -30,5 +30,4 @@ jobs:
           pipenv install --deploy --dev
       - name: Build a binary wheel and a source tarball
         run: |
-          python -m cval_lib
-      
+          python setup.py sdist --formats=zip,gztar,bztar,ztar,tar
