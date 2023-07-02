@@ -38,7 +38,8 @@ class Dataset(AbstractHandler):
         self.route = f'{MainConfig().main_url}/dataset'
         self.dataset_id = None
         self.result = Result(session)
-        self.embedding = Embedding(session, _is_not_second=False).monkey_patch_url
+        self._embedding = Embedding(session, _is_not_second=False)
+        self.embedding = self._embedding.monkey_patch_url
         self.detection = Detection(session)
         super().__init__(session)
 
@@ -66,6 +67,7 @@ class Dataset(AbstractHandler):
         self._construct_request(name, description)
         self._post(url=self.route, json=self.dataset_request().dict())
         self.dataset_id = self.send().json().get('dataset_id')
+        self._embedding.dataset_id = self.dataset_id
         return self.dataset_id
 
     def update(
@@ -73,7 +75,7 @@ class Dataset(AbstractHandler):
             dataset_id: str = None,
             name: str = None,
             description: str = None,
-    ) -> DatasetResponse:
+    ) -> DatasetModel:
         """
         this method updates a dataset
         :param dataset_id: id of dataset
@@ -94,12 +96,13 @@ class Dataset(AbstractHandler):
         self.dataset_id = dataset_id
         if self.dataset_id is None:
             raise ValueError('dataset_id cannot be None')
+        self._embedding.dataset_id = dataset_id
         return self.dataset_id
 
     def get(
             self,
             dataset_id: str = None,
-    ) -> DatasetResponse:
+    ) -> DatasetModel:
         """
         this method returns a dataset name and description by dataset_id
         :param dataset_id: id of dataset

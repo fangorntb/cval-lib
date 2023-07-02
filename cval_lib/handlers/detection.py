@@ -21,6 +21,7 @@ from cval_lib.configs.main_config import MainConfig
 from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.handlers.result import Result
 from cval_lib.models.detection import DetectionSamplingOnPremise
+from models.result import ResultResponse
 
 
 class Detection(AbstractHandler):
@@ -32,12 +33,11 @@ class Detection(AbstractHandler):
         self.result = Result(session)
         super().__init__(session)
 
-    def on_premise_sampling(self, config: DetectionSamplingOnPremise) -> str:
+    def on_premise_sampling(self, config: DetectionSamplingOnPremise):
         """
         :param config: request model
         :return: result_id
         """
-        self.result.result_id = self.session.send(
-            self._post(self.route + 'on-premice/sampling/detection', json=config.dict()),
-        ).json().get('result_id')
-        return self.result.result_id
+        self._post(self.route + '/on-premice/sampling/detection', json=config.dict())
+        return ResultResponse.parse_obj(self.send().json())
+

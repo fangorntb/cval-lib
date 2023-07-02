@@ -1,1 +1,1 @@
-python3 setup.py sdist --formats=zip,gztar,bztar,ztar,tar
+python3 setup.py sdist

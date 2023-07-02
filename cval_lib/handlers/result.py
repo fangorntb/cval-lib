@@ -17,6 +17,7 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 
 from requests import Session
 
+from configs.main_config import MainConfig
 from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.models.result import ResultResponse
 
@@ -29,7 +30,7 @@ class Result(AbstractHandler):
             self,
             session: Session,
     ):
-        self.route = f'http://127.0.0.1:9940/api/result'
+        self.route = f'{MainConfig.main_url}/result'
         self.result_id = None
         super().__init__(session)
 

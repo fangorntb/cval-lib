@@ -36,28 +36,40 @@ class AbstractHandler(Request):
             json=None,
         )
 
-    def _get(self, url: str, params=None):
+    def _get(self, url: str, params=None, stream=False):
         self.url = url
         self.method = 'get'
         self.params = params
+        self.stream = stream
 
     def _delete(self, url: str, params=None):
         self._get(url, params=params)
         self.method = 'delete'
 
-    def _post(self, url: str, json=None, params=None):
-        self._get(url, params=params)
+    def _post(self, url: str, json=None, params=None, stream=False, **files):
+        self._get(url, params=params, stream=stream)
         self.method = 'post'
         self.json = json
+        self.files = files
 
-    def _put(self, url: str, json=None, params=None):
-        self._post(url, json, params)
+    def _put(self, url: str, json=None, params=None, stream=False, **files):
+        self._post(url, json, params, stream=stream, **files)
         self.method = 'put'
 
     @staticmethod
     def validate_response(resp: Response):
         if resp.status_code >= 400:
-            raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
+            match resp.status_code:
+                case 422:
+                    raise ValueError(resp.json())
+                case 403:
+                    raise PermissionError(resp.json())
+                case 409:
+                    raise ValueError(resp.json())
+                case 400:
+                    raise ValueError(resp.json())
+                case _:
+                    raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
 
     def send(self):
         resp = self.session.send(self.prepare())

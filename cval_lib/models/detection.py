@@ -71,7 +71,7 @@ class DetectionSamplingOnPremise(BaseModel):
 
     @validator('sort_strategy')
     def validate_sort_strategy(cls, value):
-        allowed = 'max,min'.split(',')
+        allowed = 'ascending,descending'.split(',')
         if value not in allowed:
             raise ValueError(f"allowed sort_strategy = {allowed}")
         return value

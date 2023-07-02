@@ -72,9 +72,9 @@ The library architecture consists of **three layers**:
 ##### Set your user_api_key
 
 ```python3
-from cval_lib import CVALConnection
+from cval_lib.connection import CVALConnection
 USER_API_KEY='awesome_api_key'
-cval = CVALConnection(api_key)
+cval = CVALConnection(USER_API_KEY)
 ```
 
 > The same actions are available with the rest of the entities, but there are some nuances, for example, somewhere there is the use of models, and somewhere only parameters. But anyway, these examples well reflect possible scenarios when working with cval. The most typical api scenario is a dataset, so let's start with it.
@@ -90,7 +90,7 @@ print(ds_id)
 ```
 
 ##### Update dataset
-```python
+```python3
 ds = cval.dataset()
 print(ds.update(ds_id, description='any string data'))
 # :NOTE: the dataset can store the state (ds_id)
@@ -98,7 +98,7 @@ ds.update(name='sample name')
 ```
 
 ##### Get dataset
-```python
+```python3
 print(ds.get())
 ```
 
@@ -110,24 +110,28 @@ print(ds.get())
 
 ##### Create embeddings
 
-```python
+```python3
 from random import random
 import uuid
 from cval_lib.models.embedding import ImageEmbeddingModel
 
-img_id_1 = str(uuid.uuid4())
-img_id_2 = str(uuid.uuid4())
+img_id_1 = str(uuid.uuid4().hex)
+img_id_2 = str(uuid.uuid4().hex)
+
 
 embeddings = [
- ImageEmbeddingModel(id=img_id_1, image_embedding=list(map(random, range(1000)))), 
- ImageEmbeddingModel(id=img_id_2, image_embedding=list(map(random, range(1000)))),
+ ImageEmbeddingModel(id=img_id_1, image_embedding=list(map(lambda x:random(), range(1000)))),
+ ImageEmbeddingModel(id=img_id_2, image_embedding=list(map(lambda x: random(), range(1000)))),
 ]
+
+print(embeddings)
 ```
 
 
 ##### Upload & check embeddings
-```python
-emb = cval.embedding(ds_id)
+
+```python3
+emb = cval.embedding(ds_id, 'training')
 emb.upload_many(embeddings)
 print(emb.get_many())
 ```
@@ -163,11 +167,11 @@ print(frames_predictions)
 
 ```python3
 from cval_lib.models.detection import DetectionSamplingOnPremise
-response_model = DetectionSamplingOnPremise(
+request = DetectionSamplingOnPremise(
  num_of_samples=200, 
  bbox_selection_policy='min', 
  selection_strategy='margin', 
- sort_strategy='max',
+ sort_strategy='ascending',
  frames=frames_predictions,
 )
 ```

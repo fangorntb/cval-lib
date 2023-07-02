@@ -15,10 +15,33 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
 
-
 if __name__ == '__main__':
-    from cval_lib.connection import CVALConnection
-    user_api_key = 'user_api_key'
-    cval = CVALConnection(user_api_key)
-    print(cval.result().get_results())
-    cval.result().get_result(cval.result().get_results()[0].result_id)
+    import uuid
+    from random import random
+
+    from connection import CVALConnection
+    from cval_lib.models.detection import DetectionSamplingOnPremise, FramePrediction, BBoxScores
+
+    frames_predictions = list(
+        map(
+            lambda x: FramePrediction(
+                frame_id=str(uuid.uuid4().hex),
+                predictions=list(map(lambda _: BBoxScores(category_id=str(uuid.uuid4()), score=random()), range(100)))
+            ),
+            range(10)
+        )
+    )
+
+    print(frames_predictions)
+
+    request = DetectionSamplingOnPremise(
+        num_of_samples=200,
+        bbox_selection_policy='min',
+        selection_strategy='margin',
+        sort_strategy='ascending',
+        frames=frames_predictions,
+    )
+    api_key = '11a6006a98793bb5086bbf6f6808dd6bd9a706a38ddb36c58a484991263e8535'
+    cval = CVALConnection(api_key)
+    detection = cval.detection()
+    print(detection.on_premise_sampling(request))

@@ -14,6 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+
 from typing import List
 
 from pydantic import BaseModel, Field
