@@ -17,7 +17,7 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 
 from requests import Session
 
-from configs.main_config import MainConfig
+from cval_lib.configs.main_config import MainConfig
 from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.models.result import ResultResponse
 

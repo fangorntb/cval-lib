@@ -21,7 +21,7 @@ from cval_lib.configs.main_config import MainConfig
 from cval_lib.handlers._abstract_handler import AbstractHandler
 from cval_lib.handlers.result import Result
 from cval_lib.models.detection import DetectionSamplingOnPremise
-from models.result import ResultResponse
+from cval_lib.models.result import ResultResponse
 
 
 class Detection(AbstractHandler):
