@@ -149,13 +149,14 @@ from cval_lib.models.detection import BBoxScores, FramePrediction
 
 # :NOTE: example only
 frames_predictions = list(
-  map(
-  lambda x: FramePrediction(
-  frame_id=str(uuid.uuid4()), 
-  predictions=list(map(lambda x: BBoxScores(category_id=str(uuid.uuid4()), random.random()), range(100)))
-  ), 
-  range(100)
- )
+    map(
+        lambda x: FramePrediction(
+            frame_id=str(uuid.uuid4().hex),
+            predictions=list(
+                map(lambda x: BBoxScores(category_id=str(uuid.uuid4()), score=random.random()), range(100)))
+        ),
+        range(10)
+    )
 )
 
 print(frames_predictions)
