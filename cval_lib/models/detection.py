@@ -53,7 +53,7 @@ class DetectionSamplingOnPremise(BaseModel):
     bbox_selection_policy: str
     selection_strategy: str
     sort_strategy: str
-    frames: List[FramePrediction] = Field(max_items=10_000)
+    frames: List[FramePrediction]
 
     @validator('bbox_selection_policy')
     def validate_bbox_selection_policy(cls, value):
