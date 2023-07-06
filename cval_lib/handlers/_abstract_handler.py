@@ -59,17 +59,7 @@ class AbstractHandler(Request):
     @staticmethod
     def validate_response(resp: Response):
         if resp.status_code >= 400:
-            match resp.status_code:
-                case 422:
-                    raise ValueError(resp.json())
-                case 403:
-                    raise PermissionError(resp.json())
-                case 409:
-                    raise ValueError(resp.json())
-                case 400:
-                    raise ValueError(resp.json())
-                case _:
-                    raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
+            raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
 
     def send(self):
         resp = self.session.send(self.prepare())
