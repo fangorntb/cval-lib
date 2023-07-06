@@ -137,7 +137,7 @@ print(emb.get_many())
 ```
 
 > The following example is used to invoke active learning
-
+ 
 ### Active learning
 
 ##### Get predictions data
