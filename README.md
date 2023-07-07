@@ -14,6 +14,7 @@
       <a href="https://cval.ai">REST API docs</a>
       ·
       <a href="https://github.com/fangorntreabeard/cval-lib/issues">Report Bug</a>
+      <a href="https://colab.research.google.com/drive/1f93b-aCv4MacngujLVUcQBJ9T1mJZBKH?usp=sharing"> Google Colaboratory Demo </a>
     </b>
   </p>
 </div>
@@ -73,7 +74,7 @@ The library architecture consists of **three layers**:
 
 ```python3
 from cval_lib.connection import CVALConnection
-USER_API_KEY='awesome_api_key'
+USER_API_KEY = 'awesome_api_key'
 cval = CVALConnection(USER_API_KEY)
 ```
 
@@ -158,9 +159,7 @@ frames_predictions = list(
         range(10)
     )
 )
-
 print(frames_predictions)
-
 
 ```
 
@@ -180,18 +179,21 @@ request = DetectionSamplingOnPremise(
 ##### Run active learning
 ```python3
 emb = cval.detection()
-print(emd.on_premise_sampling(response_model))
+print(emb.on_premise_sampling(request))
 ```
 > The following method is most relevant when we are dealing with long-term tasks and, accordingly, with asynchronous interaction.
 ##### Polling
 > refers to actively sampling the status of an external device by a client program as a synchronous activity.
+
 ```python3
 from time import sleep
+
 result = None
 sleep_sec = 1
 while result is None:
-    result = emb.result.get_result()
-    sleep(sleep_sec)
-    sleep_sec *= 2
+ print(f'Pollint...\t{sleep_sec}')
+ result = emb.result.get()
+ sleep(sleep_sec)
+ sleep_sec *= 2
 print(result)
 ```
