@@ -41,7 +41,7 @@ class Result(AbstractHandler):
             raise ValueError('result_id cannot be None')
         self.result_id = result_id
 
-    def get_result(self, result_id: str = None) -> ResultResponse:
+    def get(self, result_id: str = None) -> ResultResponse:
         """
         :param result_id: id of result
         :return: ResultResponse
@@ -50,11 +50,11 @@ class Result(AbstractHandler):
         self._get(self.route + f'/{self.result_id}')
         return ResultResponse.parse_obj(self.send().json())
 
-    def get_results(self, dataset_id: str = None, limit=100, ):
+    def get_many(self, dataset_id: str = None, limit=100, ):
         """
         :param dataset_id: id of dataset
         :param limit: limit of returned objects
         :return:
         """
-        self._get(self.route + 's', params={'limit': limit, 'dataset_id': dataset_id if dataset_id else 'null'})
+        self._get(self.route + 's', params={'limit': limit, 'dataset_id': dataset_id})
         return [ResultResponse.parse_obj(i) for i in self.send().json()]

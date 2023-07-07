@@ -18,7 +18,7 @@ class Frame(AbstractHandler):
         super().__init__(session)
 
     def read(self):
-        self._get(self.url, stream=True)
+        self._get(self.route, stream=True)
         return self.send()
 
     def create(self, file):
@@ -34,5 +34,5 @@ class Frame(AbstractHandler):
         return self.send()
 
     def hash(self):
-        self._get(self.url+'/hash')
+        self._get(self.route+'/hash')
         return self.send().data

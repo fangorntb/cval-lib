@@ -35,9 +35,15 @@ class Detection(AbstractHandler):
 
     def on_premise_sampling(self, config: DetectionSamplingOnPremise):
         """
+
         :param config: request model
-        :return: result_id
+        :return: ResultResponse
+
         """
         self._post(self.route + '/on-premice/sampling/detection', json=config.dict())
-        return ResultResponse.parse_obj(self.send().json())
+        result = ResultResponse.parse_obj(
+            self.send().json()
+        )
+        self.result.result_id = result.result_id
+        return result
 

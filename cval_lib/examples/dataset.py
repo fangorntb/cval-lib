@@ -20,7 +20,7 @@ if __name__ == '__main__':
     from cval_lib.connection import CVALConnection
 
     # set up your user_api_key
-    user_api_key = '11a6006a98793bb5086bbf6f6808dd6bd9a706a38ddb36c58a484991263e8535'
+    user_api_key = 'USER_API_KEY'
     # set up session
     cval = CVALConnection(user_api_key)
     # choose strategy

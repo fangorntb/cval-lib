@@ -18,8 +18,8 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 
 if __name__ == '__main__':
     from cval_lib.connection import CVALConnection
-    api_key = '1d770d0b3f5898ec9e24c5422480b2419b9363852fc14a2e8881de2c6e43b82a'
+    api_key = 'USER_API_KEY'
     cval = CVALConnection(api_key)
     ds = cval.dataset()
     ds.create()
-    print(ds.result.get_results())
+    print(ds.result.get_many())
