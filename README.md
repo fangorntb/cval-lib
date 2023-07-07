@@ -145,7 +145,7 @@ print(emb.get_many())
 ##### Get predictions data
 
 ```python3
-import random
+from random import random
 import uuid
 from cval_lib.models.detection import BBoxScores, FramePrediction
 
@@ -155,7 +155,7 @@ frames_predictions = list(
         lambda x: FramePrediction(
             frame_id=str(uuid.uuid4().hex),
             predictions=list(
-                map(lambda x: BBoxScores(category_id=str(uuid.uuid4()), score=random.random()), range(100)))
+                map(lambda x: BBoxScores(category_id=str(uuid.uuid4()), score=random()), range(100)))
         ),
         range(10)
     )
@@ -187,14 +187,41 @@ print(emb.on_premise_sampling(request))
 > refers to actively sampling the status of an external device by a client program as a synchronous activity.
 
 ```python3
+import uuid
+from random import random
 from time import sleep
+
+from cval_lib.connection import CVALConnection
+from cval_lib.models.detection import DetectionSamplingOnPremise, FramePrediction, BBoxScores
+
+frames_predictions = list(
+        map(
+            lambda x: FramePrediction(
+                frame_id=str(uuid.uuid4().hex),
+                predictions=list(map(lambda _: BBoxScores(category_id=str(uuid.uuid4()), score=random()), range(100)))
+            ),
+            range(1000)
+        )
+    )
+
+request = DetectionSamplingOnPremise(
+        num_of_samples=200,
+        bbox_selection_policy='min',
+        selection_strategy='margin',
+        sort_strategy='ascending',
+        frames=frames_predictions,
+    )
+emb = cval.detection()
+print(emb.on_premise_sampling(request))
 
 result = None
 sleep_sec = 1
 while result is None:
- print(f'Pollint...\t{sleep_sec}')
- result = emb.result.get()
- sleep(sleep_sec)
- sleep_sec *= 2
+    result = emb.result.get().result
+    print(f'Polling... {sleep_sec} s')
+    sleep(sleep_sec)
+    sleep_sec *= 2
+
 print(result)
+
 ```
