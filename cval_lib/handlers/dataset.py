@@ -101,7 +101,7 @@ class Dataset(AbstractHandler):
     def get(
             self,
             dataset_id: str = None,
-    ) -> DatasetModel:
+    ) -> 'DatasetModel':
         """
         this method returns a dataset name and description by dataset_id
         :param dataset_id: id of dataset
@@ -115,7 +115,7 @@ class Dataset(AbstractHandler):
             self,
             name: str = None,
             description: str = None,
-    ) -> List[DatasetResponse]:
+    ) -> List['DatasetResponse']:
         """
         this method returns a dataset name and description by dataset_id
         :param name: the name of dataset. regexp

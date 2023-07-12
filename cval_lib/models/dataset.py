@@ -14,7 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
-
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -25,8 +25,8 @@ class DatasetModel(BaseModel):
     :raises pydantic.error_wrappers.ValidationError:
     if len(dataset_name) > 32 or len(dataset_description) > 256
     """
-    dataset_name: str | None = Field(max_length=32,)
-    dataset_description: str | None = Field(max_length=256,)
+    dataset_name: Optional[str] = Field(max_length=32,)
+    dataset_description: Optional[str] = Field(max_length=256,)
 
 
 class DatasetDefaultResponse(BaseModel):

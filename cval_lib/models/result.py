@@ -14,7 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -37,8 +37,8 @@ class WeightsSimpleResponse(BaseModel):
     :param weights_id: id of weights
     :param version: current weights version
     """
-    weights_id: str | None
-    version: str | None
+    weights_id: Optional[str]
+    version: Optional[str]
 
 
 class ResultResponse(BaseModel):
@@ -52,10 +52,10 @@ class ResultResponse(BaseModel):
     :param weights: weights of result
     """
     result_id: str
-    dataset_id: str | None
+    dataset_id: Optional[str]
     time_start: float
-    time_end: float | None
+    time_end: Optional[float]
     type_of_task: str
     action: str
-    weights: WeightsConfigResponse | None
+    weights: WeightsConfigResponse
     result: Any
