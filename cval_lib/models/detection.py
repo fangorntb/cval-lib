@@ -14,7 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
-from typing import List
+from typing import List, Optional
 from pydantic import validator
 
 from pydantic import BaseModel, Field
@@ -35,7 +35,7 @@ class FramePrediction(BaseModel):
     :param predictions: bbox scores
     """
     frame_id: str = Field(max_length=32)
-    predictions: List[BBoxScores]
+    predictions: Optional[List[BBoxScores]]
 
 
 class DetectionSamplingOnPremise(BaseModel):
