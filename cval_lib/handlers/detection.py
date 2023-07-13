@@ -40,7 +40,7 @@ class Detection(AbstractHandler):
         :return: ResultResponse
 
         """
-        self._post(self.route + '/on-premice/sampling/detection', json=config.dict())
+        self._post(self.route + '/on-premise/sampling/detection', json=config.dict())
         result = ResultResponse.parse_obj(
             self.send().json()
         )

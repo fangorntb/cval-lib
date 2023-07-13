@@ -44,11 +44,11 @@ class Embedding(AbstractHandler):
         self.route = f'{MainConfig().main_url}/dataset/{dataset_id}/{type_of_dataset}/'
         super().__init__(session)
 
-    def monkey_patch_url(self, type_of_dataset: str, ) -> None:
+    def monkey_patch_url(self, type_of_dataset: str, ) -> 'None':
         self.route = f'{MainConfig().main_url}/dataset/{self.dataset_id}/{type_of_dataset}/'
         return self
 
-    def get_many(self, start_limit: int = 0, stop_limit: int = 1000) -> List[ImageEmbeddingModel]:
+    def get_many(self, start_limit: int = 0, stop_limit: int = 1000) -> List['ImageEmbeddingModel']:
         """
         :param start_limit: upper limit of items
         :param stop_limit: lower limit of items
@@ -57,7 +57,7 @@ class Embedding(AbstractHandler):
         self._get(f'{MainConfig.main_url}/dataset/{self.dataset_id}/{self.type_of_dataset}/embeddings', params={'start_limit': start_limit, 'stop_limit': stop_limit})
         return [ImageEmbeddingModel.parse_obj(i) for i in self.send().json()]
 
-    def get_by_id(self, embedding_id: str, ) -> [ImageEmbeddingModel]:
+    def get_by_id(self, embedding_id: str, ) -> 'ImageEmbeddingModel':
         """
         :param embedding_id: id of embedding
         :return: ImageEmbeddingModel
@@ -82,7 +82,7 @@ class Embedding(AbstractHandler):
         self._post(self.route + f'/embedding/{embedding_id}', json=embedding.dict())
         return self.send()
 
-    def update_many(self, embeddings: List[ImageEmbeddingModel]) -> Response:
+    def update_many(self, embeddings: List['ImageEmbeddingModel']) -> Response:
         """
         :param embeddings: List[ImageEmbeddingModel]
         :return: Response, This method does not return anything useful to use, but performs an action

@@ -1,2 +1,4 @@
-python3 setup.py sdist
+rm -r sdist
+python setup.py sdist
+twine upload dist/*
 
