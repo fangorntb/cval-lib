@@ -38,7 +38,7 @@ class Result(AbstractHandler):
         if result_id is None:
             result_id = self.result_id
         if result_id is None:
-            raise ValueError('result_id cannot be None')
+            raise ValueError('task_id cannot be None')
         self.result_id = result_id
 
     def get(self, result_id: str = None) -> ResultResponse:
