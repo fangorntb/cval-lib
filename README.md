@@ -33,6 +33,9 @@ With CVAL, you can iteratively **improve your models** by following our active l
 
 Repeat this process until you achieve an acceptable quality of the model.
 
+# Docs
+* [On-premise](https://github.com/fangorntreabeard/cval-lib/blob/main/docs/on-premise.md)
+
 # Getting started
 
 To start using the CVAL Rest API, you need to **obtain** a **client/user API key**. 
