@@ -37,7 +37,8 @@ This parameter defines the sampling strategy and can take the following values: 
 Strategies based on uncertainty
 Based on the confidence of the model predictions (score) for each image, the service determines an Active Learning Score (al_score) by which the images are ranked.
 
-> Calculation of al_score for margin, least, ratio, entropy is performed by the following formulas: https://robertmunro.com/Uncertainty_Sampling_Cheatsheet_PyTorch.pdf  
+> Calculation of al_score for margin, least, ratio, entropy is performed by the following formulas: 
+> [Uncertainty Sampling Cheatsheet](https://robertmunro.com/Uncertainty_Sampling_Cheatsheet_PyTorch.pdf)
 
 ### In brief:
 * **least** - difference between the most confident prediction and 100% confidence;
