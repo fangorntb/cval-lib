@@ -19,13 +19,15 @@ The label class that has been assigned by the model for this prediction.
 _This parameter is optional._ 
 
 ### score
+
 The confidence with which the model made the prediction (float, from 0 to 1). This parameter is optional. 
+
 ### embedding_id
 Embedding ID for prediction.  This parameter is optional and is only used for diversity-based strategies. The embedding must first be loaded into the service using the client library's embedding methods.
 > Fake prediction
 In case of fake predictions for margin, least, ratio, entropy methods the service will assign score = 0,5. For the probability method, the service will set score = 0. 
 
-For fake predictions in diversity methods, the service will set score = 1 and category_id different from target (e.g., if target categories are "1", "2", "3", the service will assign category "-1"). 
+> For fake predictions in diversity methods, the service will set score = 1 and category_id different from target (e.g., if target categories are "1", "2", "3", the service will assign category "-1"). 
 
 > The client should take care of generating the embedding for the fake prediction himself. In this case it is recommended to generate embedding for the whole image.
 
