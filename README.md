@@ -16,7 +16,8 @@
       <a href="https://github.com/fangorntreabeard/cval-lib/issues">Report Bug</a>
       ·
       <a href="https://colab.research.google.com/drive/1f93b-aCv4MacngujLVUcQBJ9T1mJZBKH?usp=sharing"> Google Colaboratory Demo </a>
-    </b>
+    
+   </b>
   </p>
 </div>
 
