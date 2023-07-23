@@ -8,6 +8,7 @@
 ### frames
 
 Set of **unlabelled images**. Each image has a required parameter frame_id and an optional parameter predictions.
+
 ### predictions
 
 The model's **predictions for an image**. Each prediction has an optional category_id, score and embedding_id parameter. Predictions are optional for an image. 
@@ -23,7 +24,9 @@ _This parameter is optional._
 The confidence with which the model made the prediction (float, from 0 to 1). This parameter is optional. 
 
 ### embedding_id
+
 Embedding ID for prediction.  This parameter is optional and is only used for diversity-based strategies. The embedding must first be loaded into the service using the client library's embedding methods.
+
 > Fake prediction
 In case of fake predictions for margin, least, ratio, entropy methods the service will assign score = 0,5. For the probability method, the service will set score = 0. 
 
@@ -41,6 +44,7 @@ Based on the confidence of the model predictions (score) for each image, the ser
 > [Uncertainty Sampling Cheatsheet](https://robertmunro.com/Uncertainty_Sampling_Cheatsheet_PyTorch.pdf)
 
 ### In brief:
+
 * **least** - difference between the most confident prediction and 100% confidence;
 * **margin** - difference between the top two most confident predictions;
 * **ratio**  - ratio between the top two most confident predictions;
@@ -72,6 +76,7 @@ If ascending is selected, the images will be sorted in **ascending order**. Desc
 After sorting is applied, images will always be selected **from the left**. For example, if descending sorting is selected, then images with **maximum score** values will be selected.
 
 ### Selection Strategy Combination (under construction)
+
 > A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. To simplify the construction of this pipeline, the service allows you to specify a result_id parameter, which will pass all output values from the previous sampling step to the method.
 
 See example request:
