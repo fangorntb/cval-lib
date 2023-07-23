@@ -44,6 +44,6 @@ class Detection(AbstractHandler):
         result = ResultResponse.parse_obj(
             self.send().json()
         )
-        self.result.result_id = result.result_id
+        self.result.result_id = result.task_id
         return result
 

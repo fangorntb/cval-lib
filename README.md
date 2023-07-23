@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <p>
-    <img src="https://github.com/fangorntreabeard/cval-lib/blob/main/logo/logo.jpg?raw=true" alt="Cval logo" width="155" height="155">
+    <img src="https://github.com/fangorntreabeard/cval-lib/blob/main/images/logo.jpg?raw=true" alt="Cval logo" width="155" height="155">
   </p>
 <h3 align="center">CVAL REST API LIBRARY</h3>
   <p align="center">

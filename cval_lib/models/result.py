@@ -43,7 +43,7 @@ class WeightsSimpleResponse(BaseModel):
 
 class ResultResponse(BaseModel):
     """
-    :param result_id: id of result for polling
+    :param task_id: id of result for polling
     :param dataset_id: id of dataset
     :param time_start: starting unix timestamp
     :param time_end: ending unix timestamp
@@ -51,7 +51,7 @@ class ResultResponse(BaseModel):
     :param action: action of result: sampling or test
     :param weights: weights of result
     """
-    result_id: str
+    task_id: str
     dataset_id: Optional[str]
     time_start: float
     time_end: Optional[float]
