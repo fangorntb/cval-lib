@@ -18,14 +18,14 @@ class CVALConnection:
         """
         return Dataset(session=self._session)
 
-    def embedding(self, dataset_id: str, type_of_dataset: str):
+    def embedding(self, dataset_id: str, part_of_dataset: str):
         """
         actions with embedding: create, get, delete, update by ID or all (with some limits)
         :param dataset_id: id of dataset
-        :param type_of_dataset: type of dataset (training, test, validation)
+        :param part_of_dataset: type of dataset (training, test, validation)
         :return: Embedding
         """
-        return Embedding(self._session, dataset_id=dataset_id, type_of_dataset=type_of_dataset)
+        return Embedding(self._session, dataset_id=dataset_id, part_of_dataset=part_of_dataset)
 
     def detection(self, ):
         """

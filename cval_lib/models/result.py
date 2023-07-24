@@ -57,5 +57,5 @@ class ResultResponse(BaseModel):
     time_end: Optional[float]
     type_of_task: str
     action: str
-    weights: WeightsConfigResponse
+    weights: Optional[WeightsConfigResponse]
     result: Any

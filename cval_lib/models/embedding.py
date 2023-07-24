@@ -15,19 +15,27 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
 
-from typing import List
+from typing import List, Optional, Any
 
 from pydantic import BaseModel, Field
 
 
-class ImageEmbeddingModel(BaseModel):
-    """
-    Describes the embedding model
-    :param id: id of embedding
-    :type id: str
-    :param image_embedding: image embedding vector
-    :type image_embedding: List[float]
-    """
-    id: str = Field(max_length=32)
-    image_embedding: List[float]
+class EmbeddingModel(BaseModel):
+    embedding_id: Optional[str]
+    embedding: List[float]
 
+
+class FrameEmbeddingModel(BaseModel):
+    frame_id: str = Field(max_length=32)
+    embeddings: list[EmbeddingModel]
+
+
+class FrameEmbeddingResponseModel(BaseModel):
+    frame_id: str
+    embeddings_quantity: int
+    embeddings: list[str]
+
+
+class EmbeddingsMetaResponse(BaseModel):
+    frames_quantity: int
+    frames: List[FrameEmbeddingResponseModel] | List
