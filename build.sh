@@ -1,4 +1,4 @@
-rm -r sdist
+rm -r dist
 python setup.py sdist
-twine upload dist/*
+twine upload dist/* --verbose
 

@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='cval-lib',
-    version='0.0.2.13',
+    version='0.0.2.26',
     description='python computer vision active learning library',
     author='DGQ | Cyrill Belyakov',
     author_email='',
@@ -13,7 +13,7 @@ setup(
     },
     packages=find_packages(include=['cval_lib', 'cval_lib.*']),
     install_requires=[
-        'pydantic',
-        'requests'
+        'pydantic==1.10.9',
+        'requests==2.31.0'
     ]
 )

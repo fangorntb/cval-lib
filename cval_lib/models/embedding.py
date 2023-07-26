@@ -15,7 +15,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
 
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Union
 
 from pydantic import BaseModel, Field
 
@@ -27,15 +27,15 @@ class EmbeddingModel(BaseModel):
 
 class FrameEmbeddingModel(BaseModel):
     frame_id: str = Field(max_length=32)
-    embeddings: list[EmbeddingModel]
+    embeddings: List[EmbeddingModel]
 
 
 class FrameEmbeddingResponseModel(BaseModel):
     frame_id: str
     embeddings_quantity: int
-    embeddings: list[str]
+    embeddings: List[str]
 
 
 class EmbeddingsMetaResponse(BaseModel):
     frames_quantity: int
-    frames: List[FrameEmbeddingResponseModel] | List
+    frames: Union[List[FrameEmbeddingResponseModel], List]

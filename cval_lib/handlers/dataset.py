@@ -34,7 +34,7 @@ class Dataset(AbstractHandler):
     Creating a dataset is similar to creating a folder.
     """
     def __init__(self, session: Session):
-        self.dataset_request = DatasetModel()
+        self.dataset_request = DatasetModel(dataset_name='', dataset_description='')
         self.route = f'{MainConfig().main_url}/dataset'
         self.dataset_id = None
         self.result = Result(session)
