@@ -1,20 +1,21 @@
 # Sampling for the detection task (on-premise)
-## Parameter Description
 
-### num_samples
+Parameter Description
+
+##num_samples
 
 **Number of samples** requested by the customer from the set of unlabelled images.
 
-### frames
+## frames
 
 Set of **unlabelled images**. Each image has a required parameter frame_id and an optional parameter predictions.
 
-### predictions
+## predictions
 
 The model's **predictions for an image**. Each prediction has an optional category_id, score and embedding_id parameter. Predictions are optional for an image. 
 _If the request does not have a prediction for an image, the image will have a **fake prediction**._
 
-#### category_id
+### category_id
 
 The label class that has been assigned by the model for this prediction.
 _This parameter is optional._ 
