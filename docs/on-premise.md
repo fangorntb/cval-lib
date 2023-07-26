@@ -29,9 +29,9 @@ The client should take care of generating the embedding for the fake prediction 
 This parameter defines the sampling strategy and can take the following values: margin, least, ratio, entropy, probability, clustering. The margin, least, ratio, entropy strategies belong to the group of strategies based on uncertainty. Clustering is a diversity strategy.
 Strategies based on uncertainty
 
-Based on the confidence of the model predictions (score) for each image, the service determines an Active Learning Score (al_score) by which the images are ranked.
+Based on the confidence of the model predictions (score) for each image, the service determines an Active Learning Score (al score) by which the images are ranked.
 
-Calculation of al_score for margin, least, ratio, entropy is performed by the following formulas: https://robertmunro.com/Uncertainty_Sampling_Cheatsheet_PyTorch.pdf  
+Calculation of al score for margin, least, ratio, entropy is performed by the following formulas: https://robertmunro.com/Uncertainty_Sampling_Cheatsheet_PyTorch.pdf  
 
 In brief:
 * least - difference between the most confident prediction and 100% confidence;
@@ -39,9 +39,9 @@ In brief:
 * ratio  - ratio between the top two most confident predictions;
 * entropy - difference between all predictions, as defined by information theory.
 
-For a probability strategy al_score is always equal to the score value.
+For a probability strategy al score is always equal to the score value.
 
-Currently the service only supports single class predictions, so for the purpose of calculating al_score the service uses the following logic: score1 = score, score2 = (1 - score).
+Currently the service only supports single class predictions, so for the purpose of calculating al score the service uses the following logic: score1 = score, score2 = (1 - score).
 
 For uncertainty strategies, two more parameters bbox_selection_policy and sort_strategy need to be set.
 Diversity-based strategies (under construction)
@@ -52,7 +52,7 @@ An example of embedding extraction and clustering-based sampling is presented in
 
 ## bbox_selection_policy
 
-This parameter specifies how al_score will be aggregated if multiple predictions have been submitted for an image. It can take the following values:
+This parameter specifies how al score will be aggregated if multiple predictions have been submitted for an image. It can take the following values:
 * min - the minimum AL score for the image will be selected;
 * max - the maximum AL score for the image will be selected; 
 * sum - all AL scores for the image will be summed up;
@@ -60,11 +60,11 @@ This parameter specifies how al_score will be aggregated if multiple predictions
 
 ## sort_strategy
 
-This parameter defines in what order the images will be sorted by al_score value and can take the following values: ascending, descending.
+This parameter defines in what order the images will be sorted by al score value and can take the following values: ascending, descending.
 
 If ascending is selected, the images will be sorted in ascending order. Descending - in descending order.
 
-After sorting is applied, images will always be selected from the left. For example, if descending sorting is selected, then images with maximum al_score values will be selected.
+After sorting is applied, images will always be selected from the left. For example, if descending sorting is selected, then images with maximum al score values will be selected.
 
 Selection Strategy Combination (under construction)
 A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. To simplify the construction of this pipeline, the service allows you to specify a result_id parameter, which will pass all output values from the previous sampling step to the method.
