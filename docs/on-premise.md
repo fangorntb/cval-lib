@@ -2,7 +2,7 @@
 
 Parameter Description
 
-##num_samples
+## num_samples
 
 **Number of samples** requested by the customer from the set of unlabelled images.
 
