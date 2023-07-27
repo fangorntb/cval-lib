@@ -119,16 +119,20 @@ print(ds.get())
 ```python3
 from random import random
 import uuid
-from cval_lib.models.embedding import ImageEmbeddingModel
 
-img_id_1 = str(uuid.uuid4().hex)
-img_id_2 = str(uuid.uuid4().hex)
+from cval_lib.connection import CVALConnection
+from cval_lib.models.embedding import EmbeddingModel, FrameEmbeddingModel
 
-
-embeddings = [
- ImageEmbeddingModel(id=img_id_1, image_embedding=list(map(lambda x:random(), range(1000)))),
- ImageEmbeddingModel(id=img_id_2, image_embedding=list(map(lambda x: random(), range(1000)))),
-]
+embeddings = tuple(
+        map(
+            lambda x: FrameEmbeddingModel(
+                frame_id=uuid.uuid4().hex,
+                embeddings=[
+                    EmbeddingModel(embedding_id=uuid.uuid4().hex, embedding=list(map(lambda x: random(), range(500))))]
+            ),
+            range(10_000)
+        )
+    )
 
 print(embeddings)
 ```
@@ -227,5 +231,4 @@ while result is None:
     sleep_sec *= 2
 
 print(result)
-
 ```
