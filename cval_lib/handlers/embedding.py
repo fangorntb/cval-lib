@@ -16,11 +16,12 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 """
 import uuid
 from typing import List
+
 from requests import Session, Response
 
 from cval_lib.configs.main_config import MainConfig
 from cval_lib.handlers._abstract_handler import AbstractHandler
-from cval_lib.models.embedding import FrameEmbeddingResponseModel, FrameEmbeddingModel, EmbeddingsMetaResponse
+from cval_lib.models.embedding import FrameEmbeddingModel, EmbeddingsMetaResponse
 
 
 class Embedding(AbstractHandler):
@@ -39,14 +40,14 @@ class Embedding(AbstractHandler):
         if _is_not_second and dataset_id is None:
             raise ValueError('dataset_id must be not None')
         if _is_not_second and part_of_dataset is None:
-            raise ValueError('type_of_dataset must be not None')
+            raise ValueError('part_of_dataset must be not None')
         self.dataset_id = dataset_id
         self.part_of_dataset = part_of_dataset
         self.route = f'{MainConfig().main_url}/dataset/{dataset_id}/{part_of_dataset}/'
         super().__init__(session)
 
     def monkey_patch_url(self, part_of_dataset: str, ) -> 'Embedding':
-        self.route = f'{MainConfig().main_url}/dataset/{self.dataset_id}/{part_of_dataset}/'
+        self.part_of_dataset = part_of_dataset
         return self
 
     def get_meta(self, start_limit: int = 0, stop_limit: int = 1000) -> 'EmbeddingsMetaResponse':
@@ -89,7 +90,7 @@ class Embedding(AbstractHandler):
         """
         self._post(
             f'{MainConfig.main_url}/dataset/{self.dataset_id}/{self.part_of_dataset}/embeddings',
-            json=[i.dict() for i in embeddings]
+            json=[i.dict() if not isinstance(i, dict) else i for i in embeddings]
         )
         return EmbeddingsMetaResponse.parse_obj(self.send().json())
 

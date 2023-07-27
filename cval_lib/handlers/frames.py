@@ -15,8 +15,8 @@ class Frames(AbstractHandler):
         self.route = f'{MainConfig.main_url}/dataset/{dataset_id}/'
         super().__init__(session)
 
-    def read_meta(self, type_of_dataset: str):
-        self._get(self.route + f'/{type_of_dataset}/frames/meta', stream=True)
+    def read_meta(self, part_of_dataset: str):
+        self._get(self.route + f'/{part_of_dataset}/frames/meta', stream=True)
         return self.send()
 
     @AbstractHandler.pos_val

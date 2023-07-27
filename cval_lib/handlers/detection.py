@@ -14,6 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+import copy
 
 from requests import Session
 
@@ -44,6 +45,6 @@ class Detection(AbstractHandler):
         result = ResultResponse.parse_obj(
             self.send().json()
         )
-        self.result.result_id = result.task_id
+        self.result.task_id = result.task_id
         return result
 

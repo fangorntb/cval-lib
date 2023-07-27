@@ -10,11 +10,11 @@ class Frame(AbstractHandler):
     def __init__(
         self,
         session: Session,
-        type_of_dataset: str,
+        part_of_dataset: str,
         frame_id: str,
         dataset_id: str = None,
     ):
-        self.route = f'{MainConfig.main_url}/dataset/{dataset_id}/{type_of_dataset}/frame/{frame_id}'
+        self.route = f'{MainConfig.main_url}/dataset/{dataset_id}/{part_of_dataset}/frame/{frame_id}'
         super().__init__(session)
 
     def read(self):

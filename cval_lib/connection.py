@@ -1,3 +1,6 @@
+import atexit
+from contextlib import suppress
+
 from requests import Session
 
 from cval_lib.handlers.dataset import Dataset
@@ -7,9 +10,13 @@ from cval_lib.handlers.result import Result
 
 
 class CVALConnection:
+    _active_connections = []
+
     def __init__(self, user_api_key: str):
         self._session = Session()
         self._session.headers = {'user_api_key': user_api_key}
+        self._active_connections.append(self)
+        atexit.register(self.close_all)
 
     def dataset(self):
         """
@@ -41,6 +48,24 @@ class CVALConnection:
         """
         return Result(self._session)
 
+    @classmethod
+    def close_all(cls):
+        for connection in cls._active_connections:
+            with suppress(Exception):
+                connection.close()
+        cls._active_connections.clear()
+
     def __del__(self):
-        self._session.close()
+        with suppress(Exception):
+            self._session.close()
         del self
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._session.close()
+
+    def close(self):
+        self._session.close()
+

@@ -31,23 +31,23 @@ class Result(AbstractHandler):
             session: Session,
     ):
         self.route = f'{MainConfig.main_url}/result'
-        self.result_id = None
+        self.task_id = None
         super().__init__(session)
 
-    def _set_result_id(self, result_id: str = None):
-        if result_id is None:
-            result_id = self.result_id
-        if result_id is None:
+    def _set_task_id(self, task_id: str = None):
+        if task_id is None:
+            task_id = self.task_id
+        if task_id is None:
             raise ValueError('task_id cannot be None')
-        self.result_id = result_id
+        self.task_id = task_id
 
-    def get(self, result_id: str = None) -> ResultResponse:
+    def get(self, task_id: str = None) -> ResultResponse:
         """
-        :param result_id: id of result
+        :param task_id: id of result
         :return: ResultResponse
         """
-        self._set_result_id(result_id)
-        self._get(self.route + f'/{self.result_id}')
+        self._set_task_id(task_id)
+        self._get(self.route + f'/{self.task_id}')
         return ResultResponse.parse_obj(self.send().json())
 
     def get_many(self, dataset_id: str = None, limit=100, ):

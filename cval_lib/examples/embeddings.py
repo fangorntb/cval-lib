@@ -14,28 +14,34 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+import time
 
 if __name__ == '__main__':
     from random import random
     import uuid
 
     from cval_lib.connection import CVALConnection
-    from cval_lib.models.embedding import ImageEmbeddingModel
+    from cval_lib.models.embedding import EmbeddingModel, FrameEmbeddingModel
 
-    img_id_1 = str(uuid.uuid4().hex)
-    img_id_2 = str(uuid.uuid4().hex)
-
-    embeddings = [
-        ImageEmbeddingModel(id=img_id_1, image_embedding=list(map(lambda x: random(), range(1000)))),
-        ImageEmbeddingModel(id=img_id_2, image_embedding=list(map(lambda x: random(), range(1000)))),
-    ]
+    embeddings = tuple(
+        map(
+            lambda x: FrameEmbeddingModel(
+                frame_id=uuid.uuid4().hex,
+                embeddings=[
+                    EmbeddingModel(embedding_id=uuid.uuid4().hex, embedding=list(map(lambda x: random(), range(500))))]
+            ),
+            range(10_000)
+        )
+    )
 
     print(embeddings)
-    user_api_key = 'USER_API_KEY'
+    user_api_key = '50b524bcae7b7bf77e2fcd34fefaf6c7192cbeef1ea55939d5f86a88f42bc809'
     cval = CVALConnection(user_api_key)
     ds = cval.dataset()
-    ds.create()
-    emb = cval.embedding("ID", 'training')
+    emb = cval.embedding(ds.create(), 'training')
+    t0 = time.time()
     emb.upload_many(embeddings)
-    ds.embedding(type_of_dataset='training').get_many()
+    t1 = time.time()
+    print(t1-t0)
+    ds.embedding(part_of_dataset='training').get_many()
     print(emb.get_many())

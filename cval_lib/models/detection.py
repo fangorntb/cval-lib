@@ -54,10 +54,10 @@ class DetectionSamplingOnPremise(BaseModel):
     num_of_samples: int
     dataset_id: Optional[str]
     mc_task_id: Optional[str]
-    use_null_detections: bool = False
-    bbox_selection_policy: str
+    use_null_detections: bool = True
+    bbox_selection_policy: Optional[str]
     selection_strategy: str
-    sort_strategy: str
+    sort_strategy: Optional[str]
     frames: List[FramePrediction]
 
     @validator('bbox_selection_policy')
