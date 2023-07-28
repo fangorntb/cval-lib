@@ -16,7 +16,8 @@
       <a href="https://github.com/fangorntreabeard/cval-lib/issues">Report Bug</a>
       ·
       <a href="https://colab.research.google.com/drive/1f93b-aCv4MacngujLVUcQBJ9T1mJZBKH?usp=sharing"> Google Colaboratory Demo </a>
-    
+      ·
+      <a href="https://github.com/fangorntreabeard/cval-lib/tree/main/docs"> Library docs </a> 
    </b>
   </p>
 </div>
@@ -32,9 +33,6 @@ With CVAL, you can iteratively **improve your models** by following our active l
 * **Then**, manually or semi-automatically annotate the images marked as more confident to increase the accuracy of the model.
 
 Repeat this process until you achieve an acceptable quality of the model.
-
-# Docs
-* [On-premise](https://github.com/fangorntreabeard/cval-lib/blob/main/docs/on-premise.md)
 
 # Getting started
 
