@@ -11,13 +11,13 @@
     A library designed to interact with the REST-API cval.ai
     <br/>
     <b>
+      <a href="https://github.com/fangorntreabeard/cval-lib/tree/main/docs"> Library docs </a> 
+      ·
       <a href="https://cval.ai">REST API docs</a>
       ·
       <a href="https://github.com/fangorntreabeard/cval-lib/issues">Report Bug</a>
       ·
       <a href="https://colab.research.google.com/drive/1f93b-aCv4MacngujLVUcQBJ9T1mJZBKH?usp=sharing"> Google Colaboratory Demo </a>
-      ·
-      <a href="https://github.com/fangorntreabeard/cval-lib/tree/main/docs"> Library docs </a> 
    </b>
   </p>
 </div>
