@@ -47,7 +47,7 @@ def get_frames(num_images: int, num_bboxes: int, emb_sz: int, categ_sz: int):
 
 
 embeddings, predictions = get_frames(100, 1, 500, 1)
-USER_API_KEY = '11a6006a98793bb5086bbf6f6808dd6bd9a706a38ddb36c58a484991263e8535'
+USER_API_KEY = 'USER_API_KEY'
 detector = CVALConnection(USER_API_KEY)
 ds_id = detector.dataset().create(name='asd', description='1a2')
 print(ds_id)

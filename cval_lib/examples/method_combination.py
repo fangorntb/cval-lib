@@ -57,7 +57,7 @@ def get_embeddings(_frames: list[str], _predictions, emb_sz=500):
 
 predictions = get_scores(500, 14, 1)
 
-USER_API_KEY = '11a6006a98793bb5086bbf6f6808dd6bd9a706a38ddb36c58a484991263e8535'
+USER_API_KEY = 'USER_API_KEY'
 detector = CVALConnection(USER_API_KEY)
 ds_id = detector.dataset().create(name='asd', description='1a2')
 print(ds_id)
@@ -90,6 +90,7 @@ task_id = detector.detection().on_premise_sampling(
     DetectionSamplingOnPremise(
         num_of_samples=2,
         dataset_id=ds_id,
+        mc_task_id=task_id,
         selection_strategy='clustering',
         frames=list(filter(lambda x: x.get('frame_id') in result, predictions)),
     )
