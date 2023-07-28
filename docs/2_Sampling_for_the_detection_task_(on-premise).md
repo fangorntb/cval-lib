@@ -1,5 +1,9 @@
 # Sampling for the detection task (on-premise)
 
+_*Advanced example on YOLOv5:*_
+
+_https://colab.research.google.com/drive/1_ii0oAtFidijcZGqu6Y67r9akwoMbHSR?usp=sharing_
+
 ## Parameter Description
 
 ### num_samples
@@ -71,9 +75,12 @@ This parameter defines in what order the images will be sorted by AL score value
 If ascending is selected, the images will be sorted in ascending order. Descending - in descending order.
 
 After sorting is applied, images will always be selected from the left. For example, if descending sorting is selected, then images with maximum AL score values will be selected.
+
 ### mc_task_id
 
 The identifier of the sampling task which results will be used in this query. This parameter is used to simplify strategy combination (see Selection Strategy Combination). This parameter is optional.
 
 ## Selection Strategy Combination (under construction)
+
 A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. To simplify the construction of this pipeline, the service allows you to specify a mc_task_id parameter that passes all output values from one sampling step to the next.
+
