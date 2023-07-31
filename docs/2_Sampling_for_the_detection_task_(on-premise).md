@@ -6,7 +6,7 @@ _https://colab.research.google.com/drive/1_ii0oAtFidijcZGqu6Y67r9akwoMbHSR?usp=s
 
 ## Parameter Description
 
-### num_samples
+### num_of_samples
 
 Number of samples requested by the customer from the set of unlabelled images.
 frames
@@ -16,13 +16,20 @@ Set of unlabelled images. Each image has a required parameter frame_id and an op
 ### predictions
 
 The model's predictions for an image. Each prediction has an optional category_id, score and embedding_id parameter. Predictions are optional for an image. If the request does not have a prediction for an image, the image will have a fake prediction.
+
 #### category_id
+
 The label class ID that has been assigned by the model for this prediction.
 This parameter is optional. 
+
 #### score
+
 The confidence with which the model made the prediction (float, from 0 to 1). This parameter is optional.
+
 #### embedding_id
+
 Embedding ID for prediction.  This parameter is optional and is only used for diversity-based strategies. The embedding must first be loaded into the service using the client library's embedding methods.
+
 #### Fake prediction
 In case of fake predictions for margin, least, ratio, entropy methods the service will assign score = 0,5. For the probability method, the service will set score = 0. 
 
@@ -31,6 +38,9 @@ The client should take care of generating the embedding for the fake prediction 
 ### use_null_detections
 
 Allow use of fake predictions if true. If false and the client tries to use fake predictions, the service will generate an error. This parameter is optional. 
+
+### dataset_id
+ID of the dataset to which the embeddings are associated. This parameter is optional and is used only for strategies that use embeddings.
 
 ### selection_strategy
 
@@ -53,12 +63,9 @@ For a probability strategy AL score is always equal to the score value.
 
 For uncertainty strategies, two more parameters bbox_selection_policy and sort_strategy need to be set.
 
-#### Diversity-based strategies (under construction)
+#### Diversity-based strategies 
 
-Currently, one diversity strategy is supported -- clustering. Based on embeddings of predictions, their classes and confidence, clusters of images are constructed. Centroids are selected from the clusters. The centroids will be selected as the most diverse images. 
-
-An example of embedding extraction and clustering-based sampling is presented in the 
-
+Currently, one diversity strategy is supported -- clustering. Based on embeddings of predictions, their classes and confidence, clusters of images are constructed. Centroids are selected from the clusters. The centroids will be selected as the most diverse images.
 
 ### bbox_selection_policy
 
@@ -76,11 +83,7 @@ If ascending is selected, the images will be sorted in ascending order. Descendi
 
 After sorting is applied, images will always be selected from the left. For example, if descending sorting is selected, then images with maximum AL score values will be selected.
 
-### mc_task_id
-
-The identifier of the sampling task which results will be used in this query. This parameter is used to simplify strategy combination (see Selection Strategy Combination). This parameter is optional.
-
-## Selection Strategy Combination (under construction)
+## Selection Strategy Combination 
 
 A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. To simplify the construction of this pipeline, the service allows you to specify a mc_task_id parameter that passes all output values from one sampling step to the next.
 
