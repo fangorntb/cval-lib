@@ -9,7 +9,8 @@ _https://colab.research.google.com/drive/1_ii0oAtFidijcZGqu6Y67r9akwoMbHSR?usp=s
 ### num_of_samples
 
 Number of samples requested by the customer from the set of unlabelled images.
-frames
+
+# frames
 
 Set of unlabelled images. Each image has a required parameter frame_id and an optional parameter predictions.
 
@@ -85,5 +86,5 @@ After sorting is applied, images will always be selected from the left. For exam
 
 ## Selection Strategy Combination 
 
-A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. To simplify the construction of this pipeline, the service allows you to specify a mc_task_id parameter that passes all output values from one sampling step to the next.
+A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. See example of the combination in the demo notebook: https://colab.research.google.com/drive/1f93b-aCv4MacngujLVUcQBJ9T1mJZBKH?usp=sharing#scrollTo=T4E7vYz-U-Cg
 
