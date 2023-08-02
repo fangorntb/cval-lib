@@ -89,4 +89,3 @@ After sorting is applied, images will always be selected from the left. If ascen
 ## Selection Strategy Combination 
 
 A typical combination of sampling strategies is to sequentially select a larger number of samples using the uncertainty strategy and then apply the diversity strategy to this set. See example of the combination in the demo notebook: https://colab.research.google.com/drive/1f93b-aCv4MacngujLVUcQBJ9T1mJZBKH?usp=sharing#scrollTo=T4E7vYz-U-Cg
-
