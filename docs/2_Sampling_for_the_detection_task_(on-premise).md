@@ -83,7 +83,8 @@ This parameter defines in what order the images will be sorted by AL score value
 
 If ascending is selected, the images will be sorted in ascending order. Descending - in descending order.
 
-After sorting is applied, images will always be selected from the left. For example, if descending sorting is selected, then images with maximum AL score values will be selected.
+After sorting is applied, images will always be selected from the left. If ascending sorting is selected, then samples with minimum AL score values will be selected. If descending sorting is selected, then samples with maximum AL score values will be selected.
+
 
 ## Selection Strategy Combination 
 
