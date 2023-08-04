@@ -53,7 +53,6 @@ class DetectionSamplingOnPremise(BaseModel):
     """
     num_of_samples: int
     dataset_id: Optional[str]
-    mc_task_id: Optional[str]
     use_null_detections: bool = True
     bbox_selection_policy: Optional[str]
     selection_strategy: str
@@ -80,27 +79,3 @@ class DetectionSamplingOnPremise(BaseModel):
         if value not in allowed:
             raise ValueError(f"allowed sort_strategy = {allowed}")
         return value
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.selection_strategy == 'clustering' and self.dataset_id is None:
-            raise ValueError('passed null dataset_id for clustering. must be not null')
-        if not self.use_null_detections and self.mc_task_id is None:
-            for frame in self.frames:
-                if tuple(filter(lambda x: None in (x.score, x.category_id), frame.predictions)):
-                    raise ValueError('use_null_detections disabled, mc_task_id not passed')
-        elif self.mc_task_id:
-            ...
-        for frame in self.frames:
-            if self.selection_strategy == 'clustering':
-                if None in tuple(map(lambda x: x.embedding_id, frame.predictions)):
-                    raise ValueError(406, 'passed null embedding_id for clustering')
-                for prediction in frame.predictions:
-                    if None in (prediction.score, prediction.category_id):
-                        prediction.score = 0.99
-                        prediction.category_id = -1
-            else:
-                for prediction in frame.predictions:
-                    if None in (prediction.score, prediction.category_id):
-                        prediction.score = 0.5
-                        prediction.category_id = 1
