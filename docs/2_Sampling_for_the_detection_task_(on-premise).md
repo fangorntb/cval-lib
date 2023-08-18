@@ -28,6 +28,11 @@ This parameter is optional.
 
 The confidence with which the model made the prediction (float, from 0 to 1). This parameter is optional.
 
+#### probabilities
+
+The probabilities for each object category are relative to a predicted bounding box
+The order in the list is determined by the category number. Sum must be equal to 1.
+
 #### embedding_id
 
 Embedding ID for prediction.  This parameter is optional and is only used for diversity-based strategies. The embedding must first be loaded into the service using the client library's embedding methods.
