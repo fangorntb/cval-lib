@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
-          pipenv install --deploy --dev
+          pipenv install
       - name: Build a binary wheel and a source tarball
         run: |
           python3 setup.py sdist bdist_wheel
