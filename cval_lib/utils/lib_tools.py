@@ -71,7 +71,8 @@ class LibraryChecker(Library):
         local = self.local_version
         if latest != local and None not in (latest, local, ):
             self.warn(
-                    f'Please update the package "{self}" to the version {latest}'
+                    f'Please update the package "{self}" to the version {latest} '
                     f'to avoid errors.'
                 )
-        self.info(f'Everything is fine! Installed cval-lib version is {local}.')
+        else:
+            self.info(f'Everything is fine! Installed cval-lib version is {local}.')
