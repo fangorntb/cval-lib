@@ -81,3 +81,4 @@ class DetectionSamplingOnPremise(BaseModel):
     sort_strategy: Optional[str]
     frames: List[FramePrediction]
     probs_weights: Optional[List[float]]
+
