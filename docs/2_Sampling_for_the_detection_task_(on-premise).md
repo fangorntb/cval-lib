@@ -10,6 +10,10 @@ _https://colab.research.google.com/drive/1_ii0oAtFidijcZGqu6Y67r9akwoMbHSR?usp=s
 
 Number of samples requested by the customer from the set of unlabelled images.
 
+### prob_weights
+
+Determines the significance (weight) of the prediction probability for each class.
+The order in the list corresponds to the order of the classes.
 
 ## frames
 
