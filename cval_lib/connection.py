@@ -2,7 +2,6 @@ import atexit
 from contextlib import suppress
 
 from requests import Session
-
 from cval_lib.handlers.dataset import Dataset
 from cval_lib.handlers.embedding import Embedding
 from cval_lib.handlers.detection import Detection

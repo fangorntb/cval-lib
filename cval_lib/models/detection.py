@@ -25,10 +25,27 @@ class BBoxScores(BaseModel):
     :param category_id: id of the category in FramePrediction namespace
     :param score: prediction of model on that bbox
     :param embedding_id: id of the embedding
+    :param probabilities: the probabilities for each object category are relative to a predicted bounding box
+    The order in the list is determined by the category number. sum must be = 1
     """
-    category_id: str
-    score: float
+    category_id: Optional[str]
+    score: Optional[float]
     embedding_id: Optional[str]
+    probabilities: Optional[List[float]]
+
+    @validator('score')
+    def validate_score(cls, value):
+        if not (0 < value < 1):
+            raise ValueError('the predicted score should be in the range (0, 1)')
+        return value
+
+    @validator('probabilities')
+    def validate_probabilities(cls, value: Optional[List[float]]):
+        if value is not None:
+            for prob in value:
+                if prob < 0:
+                    raise ValueError('Each probability must be > 0')
+        return value
 
 
 class FramePrediction(BaseModel):
@@ -45,8 +62,13 @@ class DetectionSamplingOnPremise(BaseModel):
     :param num_of_samples: absolute number of samples to select
     :param bbox_selection_policy:
     Which bounding box to select when there are multiple boxes on an image,
-    according to their confidence. Currently supports: min, max, mean
-    :selection_strategy: Currently supports: margin, least, ratio, entropy
+    according to their confidence.
+    Supports: min, max, mean
+    :param selection_strategy: Currently supports: margin, least, ratio, entropy, clustering
+    :param probs_weights:
+    Determines the significance (weight) of the prediction probability for each class.
+    The order in the list corresponds to the order of the classes.
+    It is essential for a multi-class entropy method.
     :param frames: prediction for th picture and the bbox
     :type frames: List[FramePrediction]
     :raises ValueError if value not in allowed
@@ -58,54 +80,4 @@ class DetectionSamplingOnPremise(BaseModel):
     selection_strategy: str
     sort_strategy: Optional[str]
     frames: List[FramePrediction]
-
-    @validator('bbox_selection_policy')
-    def validate_bbox_selection_policy(cls, value):
-        allowed = ['min', 'max', 'sum', 'mean']
-        if value not in allowed:
-            raise ValueError(f"allowed bbox_selection_policy = {allowed}")
-        return value
-
-    @validator('selection_strategy')
-    def validate_selection_strategy(cls, value):
-        allowed = 'margin,least,ratio,entropy,probability,clustering'.split(',')
-        if value not in allowed:
-            raise ValueError(f"allowed selection_strategy = {allowed}")
-        return value
-
-    @validator('sort_strategy')
-    def validate_sort_strategy(cls, value):
-        allowed = 'ascending,descending'.split(',')
-        if value not in allowed:
-            raise ValueError(f"allowed sort_strategy = {allowed}")
-        return value
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.selection_strategy == 'clustering' and self.dataset_id is None:
-            raise ValueError('passed null dataset_id for clustering. must be not null')
-        if self.selection_strategy != 'clustering' and None in (
-                self.sort_strategy,
-                self.bbox_selection_policy,
-        ):
-            raise ValueError(f'for '
-                             f'{self.selection_strategy}'
-                             f'sort_strategy and bbox_selection_policy'
-                             f'cat\'t be None.')
-        if not self.use_null_detections:
-            for frame in self.frames:
-                if tuple(filter(lambda x: None in (x.score, x.category_id), frame.predictions)):
-                    raise ValueError('use_null_detections disabled, mc_task_id not passed')
-        for frame in self.frames:
-            if self.selection_strategy == 'clustering':
-                if None in tuple(map(lambda x: x.embedding_id, frame.predictions)):
-                    raise ValueError(406, 'passed null embedding_id for clustering')
-                for prediction in frame.predictions:
-                    if None in (prediction.score, prediction.category_id):
-                        prediction.score = 0.99
-                        prediction.category_id = -1
-            else:
-                for prediction in frame.predictions:
-                    if None in (prediction.score, prediction.category_id):
-                        prediction.score = 0.5
-                        prediction.category_id = 1
+    probs_weights: Optional[List[float]]
