@@ -15,7 +15,7 @@ Number of samples requested by the customer from the set of unlabelled images.
 Determines the significance (weight) of the prediction probability for each class.
 The order in the list corresponds to the order of the classes.
 
-## frames
+### frames
 
 Set of unlabelled images. Each image has a required parameter frame_id and an optional parameter predictions.
 
