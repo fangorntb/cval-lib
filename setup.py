@@ -14,7 +14,7 @@ setup(
     packages=find_packages(include=['cval_lib', 'cval_lib.*']),
     install_requires=[
         'pydantic==1.10.9',
-        'requests==2.27.1',
+        'requests>=2.31.0',
         'loguru==0.7.0',
     ]
 )
