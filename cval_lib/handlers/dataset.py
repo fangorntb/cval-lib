@@ -33,6 +33,7 @@ class Dataset(AbstractHandler):
     datasets are spaces in which data for machine learning is stored.
     Creating a dataset is similar to creating a folder.
     """
+
     def __init__(self, session: Session):
         self.dataset_request = DatasetModel(dataset_name='', dataset_description='')
         self.route = f'{MainConfig().main_url}/dataset'
@@ -85,7 +86,7 @@ class Dataset(AbstractHandler):
         """
         dataset_id = self.set_dataset_id(dataset_id)
         self._construct_request(name, description)
-        self._put(url=self.route+f'/{dataset_id}', json=self.dataset_request.dict(), )
+        self._put(url=self.route + f'/{dataset_id}', json=self.dataset_request.dict(), )
         self.dataset_request = self.send().json()
         return self.dataset_request
 
@@ -108,7 +109,7 @@ class Dataset(AbstractHandler):
         :return: DatasetResponse model with updates
         """
         dataset_id = self.set_dataset_id(dataset_id)
-        self._get(url=self.route+f'/{dataset_id}')
+        self._get(url=self.route + f'/{dataset_id}')
         return DatasetModel.parse_obj(self.send().json())
 
     def get_all(
@@ -123,5 +124,5 @@ class Dataset(AbstractHandler):
         :return: DatasetResponse model with updates
         """
         self._construct_request(name, description)
-        self._get(url=self.route+'s/all', params=self.dataset_request.dict())
+        self._get(url=self.route + 's/all', params=self.dataset_request.dict())
         return [DatasetResponse.parse_obj(i) for i in self.send().json()]
