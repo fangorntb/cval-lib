@@ -14,10 +14,14 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+from __future__ import annotations
+
 from typing import List, Optional
 from pydantic import validator
 
 from pydantic import BaseModel, Field
+
+from cval_lib.models.weights import WeightsConfigModel
 
 
 class BBoxScores(BaseModel):
@@ -82,3 +86,35 @@ class DetectionSamplingOnPremise(BaseModel):
     frames: List[FramePrediction]
     probs_weights: Optional[List[float]]
 
+
+class DetectionTest(BaseModel):
+    """
+    model: type of the model. Currently, supports: ...
+    pretrain: Whether to use a pre-trained model or not
+    :raises ValueError if value not in allowed
+    """
+    weights_of_model: Optional[WeightsConfigModel]
+    model: Optional[str]
+    use_pretrain_model: Optional[bool]
+
+
+class DetectionSampling(DetectionTest):
+    """
+    :param num_samples: absolute number of samples to select
+    :param batch_unlabeled: the limit of unlabeled samples that can be processed during selection
+    :param selection_strategy:  strategy. Currently, supports ...
+    :param use_pretrain_model: Whether to use a pre-trained model or not
+    :param use_backbone_freezing: Whether to use backbone freezing in the training process
+    :param bbox_selection_policy:
+    which bounding box to select when there are multiple boxes on an image,
+    according to their confidence. Currently, supports: min, max, sum
+    :bbox_selection_quantile_range:
+    in what range of confidence will the bbox selection policy be applied
+    """
+    num_samples: int
+    selection_strategy: str
+    batch_unlabeled: int
+    use_pretrain_model: bool
+    use_backbone_freezing: bool
+    bbox_selection_policy: str
+    bbox_selection_quantile_range: list[float]

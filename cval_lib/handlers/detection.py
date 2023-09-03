@@ -14,37 +14,35 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
-import copy
 
-from requests import Session
+from cval_lib.handlers._based_on_processing import BasedOnJSON
 
-from cval_lib.configs.main_config import MainConfig
-from cval_lib.handlers._abstract_handler import AbstractHandler
-from cval_lib.handlers.result import Result
-from cval_lib.models.detection import DetectionSamplingOnPremise
+from cval_lib.models.detection import (
+    DetectionSamplingOnPremise,
+    DetectionSampling,
+    DetectionTest,
+)
 from cval_lib.models.result import ResultResponse
 
 
-class Detection(AbstractHandler):
-    def __init__(
-            self,
-            session: Session,
-    ):
-        self.route = f'{MainConfig().main_url}'
-        self.result = Result(session)
-        super().__init__(session)
+class Detection(BasedOnJSON):
 
-    def on_premise_sampling(self, config: DetectionSamplingOnPremise):
+    def on_premise_sampling(self, config: DetectionSamplingOnPremise) -> ResultResponse:
         """
-
-        :param config: request model
-        :return: ResultResponse
-
+        Start Active Learning selection for a specific model predictions.
+        Assumes synchronous interaction if the number of predictions does not exceed 10000, otherwise asynchronous.
+        Upon executing this method, you will receive either a null _value or a list of images as the result.
         """
-        self._post(self.route + '/on-premise/sampling/detection', json=config.dict())
-        result = ResultResponse.parse_obj(
-            self.send().json()
-        )
-        self.result.task_id = result.task_id
-        return result
+        return self.__processing__('/on-premise/sampling/detection', self._post, ResultResponse, config)
 
+    def saas_sampling(self, dataset_id: str, config: DetectionSampling) -> ResultResponse:
+        """
+        Start Active Learning selection for a specific dataset ID.
+        """
+        return self.__processing__(f'/dataset/{dataset_id}/sampling/detection', self._post, ResultResponse, config)
+
+    def saas_test(self, dataset_id: str, config: DetectionTest) -> ResultResponse:
+        """
+        Start model test for a specific dataset config ID.
+        """
+        return self.__processing__(f'/dataset/{dataset_id}/test/detection', self._post, ResultResponse, config, )
