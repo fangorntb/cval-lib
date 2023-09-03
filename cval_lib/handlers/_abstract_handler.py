@@ -14,15 +14,17 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+import asyncio
 from functools import wraps
 
 from requests import Request, Session, Response
 
 
 class AbstractHandler(Request):
-    def __init__(self, session: Session, sub: str = '', url=''):
+    def __init__(self, session: Session, sub: str = '', url='',):
         self.session = session
         self.sub = sub
+
         super().__init__(
             method=None,
             url=url,
@@ -66,11 +68,11 @@ class AbstractHandler(Request):
         self.method = 'put'
 
     @staticmethod
-    def validate_response(resp: Response):
+    def _validate_response(resp: Response):
         if resp.status_code >= 400:
             raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
 
     def send(self):
         resp = self.session.send(self.prepare())
-        self.validate_response(resp)
+        self._validate_response(resp)
         return resp

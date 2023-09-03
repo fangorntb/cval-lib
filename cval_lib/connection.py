@@ -11,41 +11,42 @@ from cval_lib.handlers.result import Result
 class CVALConnection:
     _active_connections = []
 
-    def __init__(self, user_api_key: str):
+    def __init__(self, user_api_key: str, sync: bool = True):
         self._session = Session()
         self._session.headers = {'user_api_key': user_api_key}
         self._active_connections.append(self)
+        self.sync = sync
         atexit.register(self.close_all)
 
-    def dataset(self):
+    def dataset(self) -> Dataset:
         """
         actions with dataset: : create, get, delete, update by ID or all (with some limits)
         :return: Dataset
         """
-        return Dataset(session=self._session)
+        return Dataset(session=self._session, )
 
-    def embedding(self, dataset_id: str, part_of_dataset: str):
+    def embedding(self, dataset_id: str, part_of_dataset: str) -> Embedding:
         """
         actions with embedding: create, get, delete, update by ID or all (with some limits)
         :param dataset_id: id of dataset
         :param part_of_dataset: type of dataset (training, test, validation)
         :return: Embedding
         """
-        return Embedding(self._session, dataset_id=dataset_id, part_of_dataset=part_of_dataset)
+        return Embedding(self._session, dataset_id=dataset_id, part_of_dataset=part_of_dataset, sync=self.sync)
 
-    def detection(self, ):
+    def detection(self) -> Detection:
         """
         This method can be used to call a detection sampling or test
         :return: Detection
         """
-        return Detection(self._session)
+        return Detection(self._session, )
 
-    def result(self):
+    def result(self) -> Result:
         """
         This method can be used for polling
         :return: Result
         """
-        return Result(self._session)
+        return Result(self._session, )
 
     @classmethod
     def close_all(cls):
