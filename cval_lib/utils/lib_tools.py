@@ -1,34 +1,11 @@
 import subprocess
-import warnings
+
 import requests
 
-
-class Color:
-    RED = "\033[91m"
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    BLUE = "\033[94m"
-    MAGENTA = "\033[95m"
-    CYAN = "\033[96m"
-    RESET = "\033[0m"
-
-    def __init__(self, color: str):
-        self.color: str = color.upper()
-
-    def __call__(self, text: str) -> None:
-        colored_text = f"{self.__getattribute__(self.color)}{text}{self.RESET}"
-        print(colored_text)
+from cval_lib.utils.logger import Logger
 
 
-class Library(str):
-    @staticmethod
-    def info(text):
-        Color('BLUE')(text)
-
-    @staticmethod
-    def warn(text):
-        Color('RED')(text)
-
+class Library(str, Logger):
     def _network(self):
         self.warn('Failed to get information')
 
@@ -62,11 +39,11 @@ class Library(str):
 
 
 class LibraryChecker(Library):
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         self.info(
-            f'CVAL-LIB: Package versioning begins...\n'
-            'To disable this option, set CVAL_CHECK_VERSION_DISABLED.'
+            f'Package versioning begins...'
         )
+        self.info('To disable this option, set CVAL_CHECK_VERSION_DISABLED.')
         latest = self.latest_version
         local = self.local_version
         if latest != local and None not in (latest, local, ):
