@@ -35,7 +35,7 @@ class Embedding(AbstractHandler):
             session: Session,
             dataset_id: str = None,
             part_of_dataset: str = None,
-            _is_not_second=True
+            _is_not_second=True,
     ):
         if _is_not_second and dataset_id is None:
             raise ValueError('dataset_id must be not None')
@@ -73,7 +73,7 @@ class Embedding(AbstractHandler):
     def get_by_id(
             self,
             frame_id: str,
-            embedding_id: str = uuid.uuid4(),
+            embedding_id: str,
     ) -> 'FrameEmbeddingModel':
         """
         :param embedding_id: id of embedding
