@@ -14,6 +14,8 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+from __future__ import annotations
+
 from typing import Any, Optional
 
 from pydantic import BaseModel

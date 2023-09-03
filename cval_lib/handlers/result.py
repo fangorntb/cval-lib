@@ -32,7 +32,7 @@ class Result(AbstractHandler):
     ):
         self.route = f'{MainConfig.main_url}/result'
         self.task_id = None
-        super().__init__(session)
+        super().__init__(session, )
 
     def _set_task_id(self, task_id: str = None):
         if task_id is None:
