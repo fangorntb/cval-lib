@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from requests import Session
 
-from cval_lib.handlers._based_on_processing import BasedOnJSON
+from cval_lib.handlers._based_on_json import BasedOnJSON
 from cval_lib.models.annotation import (
     DetectionAnnotationCOCO,
     ClassificationLabels,
