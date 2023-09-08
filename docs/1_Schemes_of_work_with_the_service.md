@@ -6,7 +6,6 @@ Interaction with the service can be carried out according to two schemes:
 
 [//]: # (Константин, пришлите .jpg хорошего качества)
 <a name="top"></a>
-<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <p>
@@ -17,3 +16,5 @@ Interaction with the service can be carried out according to two schemes:
 Fig 1. Working with the service according to the On-Premise scheme
 
 In this version, the client library supports only the On-Premise scheme and allows working with the detection task. Interaction with the service according to the scheme All in Service is carried out through the Rest API, supported solutions of classification and detection tasks.
+
+To work in the pipeline of active learning not according to the on-premise scheme, you need to create a dataset and upload to its training, test, validation parts of the picture and annotations for pictures test, validation and initial (random) train annotations for pictures.
