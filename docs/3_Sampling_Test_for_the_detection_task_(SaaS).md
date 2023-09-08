@@ -1,4 +1,4 @@
-# Sampling for the detection task (SaaS) & Test
+# Sampling & Test for the detection task (SaaS) 
 
 [Colab demo](https://colab.research.google.com/drive/1Ex6ghcrd2fj1sxImiItbzcN8RhTJ3EfT#scrollTo=laajBVirvRSV)
 
