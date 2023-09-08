@@ -14,6 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+
 import asyncio
 import logging
 import re
@@ -32,6 +33,13 @@ from cval_lib.utils.logger import Logger
 
 
 class CVALEntrypoint(Entrypoint, CVALConnection, Logger):
+    """
+    The entry point can be useful in cases where:
+        -- the task being performed is relatively small and does not need profiling;
+        -- it is known which parameters are transmitted;
+        -- there is no time to understand the library code;
+        -- there is a need to study the documentation experimentally.
+    """
     __cache__ = None
     _skip_regexps = (
         '',
@@ -56,13 +64,13 @@ class CVALEntrypoint(Entrypoint, CVALConnection, Logger):
         if self.__cache__ is None:
             self.__cache__ = self._get_methods(CVALConnection)
             self.info(f'Cached {self.__cache__.__len__()} methods.')
-
         _methods = self._chain(
             _methods=self.__cache__,
             conflicts=(
                 (
                     filter,
-                    lambda x: x.request_model,
+                    lambda x: isinstance(request, x.request_model[1], ) if x.request_model is not NoneType else
+                    (True if request is not None else False),
                     Conflict(f'Unknown model. {request.__class__}'),
                 ),
                 (
@@ -184,7 +192,6 @@ class CVALEntrypoint(Entrypoint, CVALConnection, Logger):
                 return method.func(
                     self=base_class(
                         session=session,
-                        sync=self.sync,
                         **{k: v for k, v in kwargs.items() if k in signature(base_class.__init__)}
                     ),
                     **(

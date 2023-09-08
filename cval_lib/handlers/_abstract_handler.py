@@ -47,7 +47,7 @@ class AbstractHandler(Request):
             return func(**kwargs)
         return _
 
-    def _get(self, url: str, params=None, stream=False):
+    def _get(self, url: str, params=None, stream=False, json=None):
         self.url = url
         self.method = 'get'
         self.params = params

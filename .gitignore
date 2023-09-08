@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+docs/dist/
 downloads/
 eggs/
 .eggs/
@@ -35,7 +35,7 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
-
+*lect*.md
 # Unit test / coverage reports
 htmlcov/
 .tox/
