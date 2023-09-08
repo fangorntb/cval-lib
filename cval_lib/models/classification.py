@@ -16,8 +16,8 @@ class ClassificationTest(BaseModel):
     """
     weights_of_model: Optional[WeightsConfigModel]
     model: str
-    use_pretrain_model: bool
-    use_backbone_freezing: bool
+    use_pretrain_model: bool = True
+    use_backbone_freezing: bool = False
 
     @validator('model')
     def validate_model(cls, value):
@@ -41,8 +41,8 @@ class ClassificationSampling(BaseModel):
     batch_unlabeled: int
     model: str
     selection_strategy: str
-    use_pretrain_model: bool
-    use_backbone_freezing: bool
+    use_pretrain_model: bool = True
+    use_backbone_freezing: bool = False
 
     @validator('selection_strategy')
     def validate_selection_strategy(cls, value):

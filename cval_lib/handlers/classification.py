@@ -14,6 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+from requests import Session
 
 from cval_lib.handlers._based_on_json import BasedOnJSON
 from cval_lib.models.classification import (
@@ -24,7 +25,7 @@ from cval_lib.models.result import ResultResponse
 
 
 class Classification(BasedOnJSON):
-    def saas_sampling(self, dataset_id: str, config: ClassificationSampling) -> ResultResponse:
+    def saas_sampling(self, dataset_id, config: ClassificationSampling) -> ResultResponse:
         """
         Start Active Learning selection for a specific dataset ID.
         """
@@ -35,7 +36,7 @@ class Classification(BasedOnJSON):
             config,
         )
 
-    def test_sampling(self, dataset_id: str, config: ClassificationTest) -> ResultResponse:
+    def saas_test(self, dataset_id: str, config: ClassificationTest) -> ResultResponse:
         """
         Start model test for a specific dataset ID.
         """
