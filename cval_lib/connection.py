@@ -5,7 +5,14 @@ from requests import Session
 from cval_lib.handlers.dataset import Dataset
 from cval_lib.handlers.embedding import Embedding
 from cval_lib.handlers.detection import Detection
+from cval_lib.handlers.classification import Classification
 from cval_lib.handlers.result import Result
+from cval_lib.handlers.frames import Frames
+
+from cval_lib.handlers.annotation import (
+    Detection as DetectionAnnotation,
+    Classification as ClassificationAnnotation,
+)
 
 
 class CVALConnection:
@@ -32,7 +39,7 @@ class CVALConnection:
         :param part_of_dataset: type of dataset (training, test, validation)
         :return: Embedding
         """
-        return Embedding(self._session, dataset_id=dataset_id, part_of_dataset=part_of_dataset, sync=self.sync)
+        return Embedding(self._session, dataset_id=dataset_id, part_of_dataset=part_of_dataset, )
 
     def detection(self) -> Detection:
         """
@@ -47,6 +54,30 @@ class CVALConnection:
         :return: Result
         """
         return Result(self._session, )
+
+    def frames(self, dataset_id: str, part_of_dataset: str = None) -> Frames:
+        """
+        This method can be used for raw frames data uploading and get metadata
+        :return: Frames
+        """
+        return Frames(self._session, dataset_id=dataset_id, part_of_dataset=part_of_dataset)
+
+    def det_annotation(self, dataset_id: str, ) -> DetectionAnnotation:
+        """
+        This method can be used for annotation uploading and get for detection tasks
+        :return: DetectionAnnotation
+        """
+        return DetectionAnnotation(self._session, dataset_id=dataset_id,)
+
+    def cls_annotation(self, dataset_id: str) -> ClassificationAnnotation:
+        """
+        This method can be used for annotation uploading and get for classification tasks
+        :return: DetectionAnnotation
+        """
+        return ClassificationAnnotation(self._session, dataset_id)
+
+    def classification(self) -> Classification:
+        return Classification(self._session)
 
     @classmethod
     def close_all(cls):

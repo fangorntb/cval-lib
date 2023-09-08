@@ -14,6 +14,7 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+from typing import List
 
 from requests import Session
 
@@ -29,6 +30,7 @@ class Result(AbstractHandler):
     def __init__(
             self,
             session: Session,
+            **kwargs,
     ):
         self.route = f'{MainConfig.main_url}/result'
         self.task_id = None
@@ -43,6 +45,7 @@ class Result(AbstractHandler):
 
     def get(self, task_id: str = None) -> ResultResponse:
         """
+        returns the result value
         :param task_id: id of result
         :return: ResultResponse
         """
@@ -50,8 +53,9 @@ class Result(AbstractHandler):
         self._get(self.route + f'/{self.task_id}')
         return ResultResponse.parse_obj(self.send().json())
 
-    def get_many(self, dataset_id: str = None, limit=100, ):
+    def get_many(self, dataset_id: str = None, limit=100, ) -> List[ResultResponse]:
         """
+        returns the result value Iterable
         :param dataset_id: id of dataset
         :param limit: limit of returned objects
         :return:

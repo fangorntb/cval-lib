@@ -14,7 +14,7 @@ class WeightsConfigModel(BaseModel):
     :param weights_version: Weights Version to be used in the operation
     """
     weights_id: str
-    retrain_model: bool
+    retrain_model: bool = False
     weights_version: Optional[str]
 
 

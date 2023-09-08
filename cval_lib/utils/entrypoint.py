@@ -44,7 +44,7 @@ class Entrypoint:
             _cls = an.get('return')
             if _cls:
                 del an['return']
-            _request_model = tuple(filter(lambda x: hasattr(x[1], 'parse_obj'), an))
+            _request_model = tuple(filter(lambda x: hasattr(x[1], 'parse_obj'), an.items()))
             methods.append(
                 cls.Endpoint(
                     base=obj,

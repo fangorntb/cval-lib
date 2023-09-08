@@ -16,8 +16,7 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 """
 
 if __name__ == '__main__':
-    import uuid
-    from random import random
+    from random import random, randint
 
     from cval_lib.connection import CVALConnection
     from cval_lib.models.detection import DetectionSamplingOnPremise, FramePrediction, BBoxScores
@@ -25,8 +24,8 @@ if __name__ == '__main__':
     frames_predictions = list(
         map(
             lambda x: FramePrediction(
-                frame_id=str(uuid.uuid4().hex),
-                predictions=list(map(lambda _: BBoxScores(category_id=str(uuid.uuid4()), score=random()), range(100)))
+                frame_id=randint(0, 100),
+                predictions=list(map(lambda _: BBoxScores(category_id=randint(0, 100), score=random()), range(100)))
             ),
             range(100)
         )
@@ -41,7 +40,7 @@ if __name__ == '__main__':
         sort_strategy='ascending',
         frames=frames_predictions,
     )
-    api_key = '11a6006a98793bb5086bbf6f6808dd6bd9a706a38ddb36c58a484991263e8535'
+    api_key = ...
     cval = CVALConnection(api_key)
     detection = cval.detection()
     print(detection.on_premise_sampling(request))
