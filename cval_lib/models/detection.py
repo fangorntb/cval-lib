@@ -32,7 +32,7 @@ class BBoxScores(BaseModel):
     :param probabilities: the probabilities for each object category are relative to a predicted bounding box
     The order in the list is determined by the category number. sum must be = 1
     """
-    category_id: Optional[str]
+    category_id: Optional[int]
     score: Optional[float]
     embedding_id: Optional[str]
     probabilities: Optional[List[float]]
@@ -113,8 +113,8 @@ class DetectionSampling(DetectionTest):
     """
     num_samples: int
     selection_strategy: str
-    batch_unlabeled: int
-    use_pretrain_model: bool
-    use_backbone_freezing: bool
+    batch_unlabeled: int = -1
+    use_pretrain_model: bool = True
+    use_backbone_freezing: bool = False
     bbox_selection_policy: str
     bbox_selection_quantile_range: list[float]

@@ -26,7 +26,6 @@ from cval_lib.models.result import ResultResponse
 
 
 class Detection(BasedOnJSON):
-
     def on_premise_sampling(self, config: DetectionSamplingOnPremise) -> ResultResponse:
         """
         Start Active Learning selection for a specific model predictions.
