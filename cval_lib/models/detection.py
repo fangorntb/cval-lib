@@ -21,9 +21,16 @@ from pydantic import validator
 
 from pydantic import BaseModel, Field
 
+from cval_lib.models._base import ExecModel, fields
 from cval_lib.models.weights import WeightsConfigModel
 
 
+@fields(
+    'category_id: Optional[int]',
+    'score: Optional[float]',
+    'embedding_id: Optional[str]',
+    'probabilities: Optional[List[float]]',
+)
 class BBoxScores(BaseModel):
     """
     :param category_id: id of the category in FramePrediction namespace
@@ -52,6 +59,10 @@ class BBoxScores(BaseModel):
         return value
 
 
+@fields(
+    'frame_id: str',
+    'predictions: Optional[List[BBoxScores]]'
+)
 class FramePrediction(BaseModel):
     """
     :param frame_id: id of the frame
@@ -61,7 +72,17 @@ class FramePrediction(BaseModel):
     predictions: Optional[List[BBoxScores]]
 
 
-class DetectionSamplingOnPremise(BaseModel):
+@fields(
+    'num_of_samples: int',
+    'dataset_id: Optional[str]',
+    'use_null_detections: bool = True',
+    'bbox_selection_policy: Optional[str]',
+    'selection_strategy: str',
+    'sort_strategy: Optional[str]',
+    'frames: List[FramePrediction]',
+    'probs_weights: Optional[List[float]]',
+)
+class DetectionSamplingOnPremise(ExecModel):
     """
     :param num_of_samples: absolute number of samples to select
     :param bbox_selection_policy:
@@ -86,8 +107,16 @@ class DetectionSamplingOnPremise(BaseModel):
     frames: List[FramePrediction]
     probs_weights: Optional[List[float]]
 
+    def send(self, user_api_key: str, sync: bool = True):
+        return self._send(user_api_key, '/api/on-premise/sampling/detection', sync)
 
-class DetectionTest(BaseModel):
+
+@fields(
+    'weights_of_model: Optional[WeightsConfigModel]',
+    'model: Optional[str]',
+    'use_pretrain_model: Optional[bool]',
+)
+class DetectionTest(ExecModel):
     """
     model: type of the model. Currently, supports: ...
     pretrain: Whether to use a pre-trained model or not
@@ -97,7 +126,19 @@ class DetectionTest(BaseModel):
     model: Optional[str]
     use_pretrain_model: Optional[bool]
 
+    def send(self, user_api_key: str, dataset_id: str, sync: bool = True):
+        return self._send(user_api_key, f'/dataset/{dataset_id}/test/detection', sync)
 
+
+@fields(
+    'num_samples: int',
+    'selection_strategy: str',
+    'batch_unlabeled: int = -1',
+    'use_pretrain_model: bool = True',
+    'use_backbone_freezing: bool = False',
+    'bbox_selection_policy: str',
+    'bbox_selection_quantile_range: list[float]',
+)
 class DetectionSampling(DetectionTest):
     """
     :param num_samples: absolute number of samples to select
@@ -117,4 +158,7 @@ class DetectionSampling(DetectionTest):
     use_pretrain_model: bool = True
     use_backbone_freezing: bool = False
     bbox_selection_policy: str
-    bbox_selection_quantile_range: list[float]
+    bbox_selection_quantile_range: List[float]
+
+    def send(self, user_api_key: str, dataset_id: str, sync: bool = True):
+        return self._send(user_api_key, f'/dataset/{dataset_id}/sampling/detection', sync)
