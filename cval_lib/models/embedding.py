@@ -16,27 +16,46 @@ To obtain a client_api_key, please send a request to k.suhorukov@digital-quarter
 """
 from __future__ import annotations
 
-from typing import List, Optional, Any, Union
+from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field
 
+from cval_lib.models._base import fields
 
+
+@fields(
+    'embedding_id: Optional[str]',
+    'embedding: List[float]',
+)
 class EmbeddingModel(BaseModel):
     embedding_id: Optional[str]
     embedding: List[float]
 
 
+@fields(
+    'embeddings: List[EmbeddingModel]',
+    'frame_id: str'
+)
 class FrameEmbeddingModel(BaseModel):
-    frame_id: str = Field(max_length=32)
     embeddings: List[EmbeddingModel]
+    frame_id: str = Field(max_length=32)
 
 
+@fields(
+    'frame_id: str',
+    'embeddings_quantity: int',
+    'embeddings: List[str]'
+)
 class FrameEmbeddingResponseModel(BaseModel):
     frame_id: str
     embeddings_quantity: int
     embeddings: List[str]
 
 
+@fields(
+    'frames_quantity: int',
+    'frames: Union[List[FrameEmbeddingResponseModel], List]'
+)
 class EmbeddingsMetaResponse(BaseModel):
     frames_quantity: int
     frames: Union[List[FrameEmbeddingResponseModel], List]

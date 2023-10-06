@@ -97,7 +97,7 @@ class Embedding(AbstractHandler):
         """
         :return: Response, This method does not return anything useful to use, but performs an action
         """
-        self._delete(self.route + f'embeddings')
+        self._delete(self.route + 'embeddings')
         return self.send()
 
     def delete_by_id(self, frame_id: str, embedding_id: str = 'all') -> Response:

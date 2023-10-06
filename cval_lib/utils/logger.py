@@ -14,7 +14,7 @@ class Color:
     RESET = "\033[0m"
 
     def __init__(self, color: str = None, loglevel: int = logging.INFO):
-        logger = logging.getLogger()
+        logging.getLogger()
         logging.basicConfig(level=loglevel, format='%(asctime)s | %(message)s')
         self.loglevel = loglevel
         self.color: str = color.upper()
