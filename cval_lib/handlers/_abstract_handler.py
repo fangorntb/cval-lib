@@ -14,13 +14,29 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
-import asyncio
 from functools import wraps
 
 from requests import Request, Session, Response
 
+from cval_lib.utils.exceptions import (
+    Forbidden,
+    Conflict,
+    NotFound,
+    NotAcceptable,
+    SchemaException,
+    UnknownException,
+)
+
 
 class AbstractHandler(Request):
+    __exceptions_chain__ = (
+        Forbidden,
+        Conflict,
+        NotFound,
+        NotAcceptable,
+        SchemaException
+    )
+
     def __init__(self, session: Session, sub: str = '', url='',):
         self.session = session
         self.sub = sub
@@ -53,24 +69,25 @@ class AbstractHandler(Request):
         self.params = params
         self.stream = stream
 
-    def _delete(self, url: str, params=None):
+    def _delete(self, url: str, params=None, json=None):
         self._get(url, params=params)
         self.method = 'delete'
 
-    def _post(self, url: str, json=None, params=None, stream=False, **files):
+    def _post(self, url: str, json=None, params=None, stream=False, files=None):
         self._get(url, params=params, stream=stream)
         self.method = 'post'
         self.json = json
         self.files = files
 
-    def _put(self, url: str, json=None, params=None, stream=False, **files):
-        self._post(url, json, params, stream=stream, **files)
+    def _put(self, url: str, json=None, params=None, stream=False, files=None):
+        self._post(url, json, params, stream=stream, files=files)
         self.method = 'put'
 
-    @staticmethod
-    def _validate_response(resp: Response):
+    def _validate_response(self, resp: Response):
         if resp.status_code >= 400:
-            raise Exception(resp.json() if resp.status_code != 500 else 'Internal Server Error :(')
+            for exc in self.__exceptions_chain__:
+                exc().handle(resp)
+            raise UnknownException((resp.json()) if resp.status_code != 500 else 'Internal Server Error :(')
 
     def send(self):
         resp = self.session.send(self.prepare())
