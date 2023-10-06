@@ -41,9 +41,9 @@ class Library(str, Logger):
 class LibraryChecker(Library):
     def __call__(self, *args, **kwargs):
         self.info(
-            f'Package versioning begins...'
+            'Package versioning begins...'
         )
-        self.info('To disable this option, set CVAL_CHECK_VERSION_DISABLED.')
+        self.info('To disable this option, set environ variable CVAL_CHECK_VERSION=False.')
         latest = self.latest_version
         local = self.local_version
         if latest != local and None not in (latest, local, ):
