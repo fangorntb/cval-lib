@@ -14,13 +14,23 @@ Try our demo notebook to see how CVAL can revolutionize your computer vision pro
 
 To obtain a client_api_key, please send a request to k.suhorukov@digital-quarters.com
 """
+
 from __future__ import annotations
 
 from typing import Any, Optional
 
 from pydantic import BaseModel
 
+from cval_lib.models._base import fields
+from cval_lib.models.queue import QueueInfo
 
+
+@fields(
+    'weights_id: str',
+    'retrain_model: bool',
+    'old_weights_version: str',
+    'new_weights_version: str',
+)
 class WeightsConfigResponse(BaseModel):
     """
     :param weights_id: id of weights
@@ -34,6 +44,10 @@ class WeightsConfigResponse(BaseModel):
     new_weights_version: str
 
 
+@fields(
+    'weights_id: Optional[str]',
+    'version: Optional[str]'
+)
 class WeightsSimpleResponse(BaseModel):
     """
     :param weights_id: id of weights
@@ -43,6 +57,16 @@ class WeightsSimpleResponse(BaseModel):
     version: Optional[str]
 
 
+@fields(
+    'task_id: str',
+    'dataset_id: Optional[str]',
+    'time_start: float',
+    'time_end: Optional[float]',
+    'type_of_task: str',
+    'action: str',
+    'weights: Optional[WeightsConfigResponse]',
+    'result: Any',
+)
 class ResultResponse(BaseModel):
     """
     :param task_id: id of result for polling
@@ -61,3 +85,4 @@ class ResultResponse(BaseModel):
     action: str
     weights: Optional[WeightsConfigResponse]
     result: Any
+    queue_info: Optional[QueueInfo]

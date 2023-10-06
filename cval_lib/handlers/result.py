@@ -20,6 +20,7 @@ from requests import Session
 
 from cval_lib.configs.main_config import MainConfig
 from cval_lib.handlers._abstract_handler import AbstractHandler
+from cval_lib.models.queue import QueueInfo
 from cval_lib.models.result import ResultResponse
 
 
@@ -62,3 +63,7 @@ class Result(AbstractHandler):
         """
         self._get(self.route + 's', params={'limit': limit, 'dataset_id': dataset_id})
         return [ResultResponse.parse_obj(i) for i in self.send().json()]
+
+    def queue(self) -> QueueInfo:
+        self._get(MainConfig.main_url + '/api/queue')
+        return QueueInfo.parse_obj(self.send())
