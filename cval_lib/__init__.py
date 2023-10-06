@@ -83,5 +83,5 @@ __all__ = [
     'CVALEntrypoint',
 ]
 
-VERSION = '0.0.2.41'
+VERSION = '0.0.2.42'
 
