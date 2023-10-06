@@ -188,7 +188,7 @@ class CVALEntrypoint(Entrypoint, CVALConnection, Logger):
         base_class = method.base
 
         def call():
-            with self._session as session:
+            with self.session as session:
                 return method.func(
                     self=base_class(
                         session=session,
