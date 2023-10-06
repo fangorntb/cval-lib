@@ -55,7 +55,7 @@ ID of the dataset to which the embeddings are associated. This parameter is opti
 
 ### selection_strategy
 
-This parameter defines the sampling strategy and can take the following values: margin, least, ratio, entropy, probability, clustering. The margin, least, ratio, entropy strategies belong to the group of strategies based on uncertainty. Clustering is a diversity strategy.
+This parameter defines the sampling strategy and can take the following values: margin, least, ratio, entropy, probability, hierarchical, clustering. The margin, least, ratio, entropy strategies belong to the group of strategies based on uncertainty. Clustering is a diversity strategy.
 #### Strategies based on uncertainty
 
 Based on the confidence of the model predictions (AL score) for each image, the service determines an Active Learning Score (AL score) by which the images are ranked.
@@ -76,7 +76,25 @@ For uncertainty strategies, two more parameters bbox_selection_policy and sort_s
 
 #### Diversity-based strategies 
 
-Currently, one diversity strategy is supported -- clustering. Based on embeddings of predictions, their classes and confidence, clusters of images are constructed. Centroids are selected from the clusters. The centroids will be selected as the most diverse images.
+Currently, two diversity strategies is supported -- clustering and hierarchical.
+Based on embeddings of predictions, their classes and confidence, clusters of images are constructed. 
+
+- clustering
+
+Centroids are selected from the clusters. The centroids will be selected as the most diverse images.
+
+- hierarchical
+
+This method does clustering arbitrarily, it takes several frames more randomly from each cluster.
+Based on [sklearn.cluster.AgglomerativeClustering](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html).
+
+### num_of_clusters
+
+default value: -1. 
+
+the number of clusters for the hierarchical diversity method. 
+
+If you pass the value -1, the number of clusters will be selected using the silhouette method.
 
 ### bbox_selection_policy
 
