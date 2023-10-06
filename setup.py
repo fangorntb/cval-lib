@@ -1,9 +1,11 @@
 from distutils.core import setup
 from setuptools import find_packages
 
+import cval_lib
+
 setup(
     name='cval-lib',
-    version='0.0.2.34',
+    version=cval_lib.VERSION,
     description='python computer vision active learning library',
     author='DGQ | Cyrill Belyakov',
     author_email='',
@@ -18,3 +20,5 @@ setup(
         'loguru==0.7.0',
     ]
 )
+
+print(1 <= 2)
