@@ -55,7 +55,7 @@ ID of the dataset to which the embeddings are associated. This parameter is opti
 
 ### selection_strategy
 
-This parameter defines the sampling strategy and can take the following values: margin, least, ratio, entropy, probability, hierarchical, clustering. The margin, least, ratio, entropy strategies belong to the group of strategies based on uncertainty. Clustering is a diversity strategy.
+This parameter defines the sampling strategy and can take the following values: margin, least, ratio, entropy, probability, hierarchical, clustering. The margin, least, ratio, entropy strategies belong to the group of strategies based on uncertainty. Clustering and hierarchical is a diversity strategies.
 #### Strategies based on uncertainty
 
 Based on the confidence of the model predictions (AL score) for each image, the service determines an Active Learning Score (AL score) by which the images are ranked.
@@ -90,11 +90,9 @@ Based on [sklearn.cluster.AgglomerativeClustering](https://scikit-learn.org/stab
 
 ### num_of_clusters
 
-default value: -1. 
+The number of clusters for the hierarchical diversity method. 
 
-the number of clusters for the hierarchical diversity method. 
-
-If you pass the value -1, the number of clusters will be selected using the silhouette method.
+If you pass the value -1, the number of clusters will be selected using the silhouette method. Default value: -1.
 
 ### bbox_selection_policy
 
