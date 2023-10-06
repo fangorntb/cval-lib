@@ -76,7 +76,7 @@ class Dataset(AbstractHandler):
             dataset_id: str = None,
             name: str = None,
             description: str = None,
-    ) -> DatasetModel:
+    ) -> 'DatasetModel':
         """
         this method updates a dataset
         :param dataset_id: id of dataset
