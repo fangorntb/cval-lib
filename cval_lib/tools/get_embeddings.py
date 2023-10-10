@@ -50,7 +50,6 @@ def log_train(corrects, sum_loss, train_loader, epoch):
     )
 
 
-
 def get_np_anchor(
         id_file: str,
         numpy: np.array,
@@ -91,16 +90,18 @@ def save_bbox_for_cluster(
 ) -> Path:
     os.makedirs(Path(path_to_bboxes) / 'crops', exist_ok=True)
     for path_to_bbox in map(
-        lambda x: Path(path_to_bboxes) / x,
-        os.listdir(path_to_bboxes)
+            lambda x: Path(path_to_bboxes) / x,
+            os.listdir(path_to_bboxes)
     ):
         if os.path.exists(path_to_bbox):
             with open(path_to_bbox) as f:
                 bbox = f.readlines()
             image = Image.open(
                 Path(path_to_images) /
-                get_before_last_dot(path_to_bbox.name) /
-                normalize_pattern(pattern)
+                (
+                        get_before_last_dot(path_to_bbox.name) +
+                        normalize_pattern(pattern)
+                )
             )
             for i, line in enumerate(bbox):
                 if len(line.strip()) == 0:
@@ -354,7 +355,7 @@ def get_embeddings(
     embeddings = [
         FrameEmbeddingModel(frame_id=img, embeddings=[EmbeddingModel(embedding_id=str(uuid.uuid4()), embedding=emb)])
         for emb, img in zip(embs, map(lambda x: x.split('__')[0], files))
-     ]
+    ]
 
     return embeddings, [
         FramePrediction(
@@ -362,8 +363,6 @@ def get_embeddings(
             predictions=[BBoxScores(embedding_id=i.embeddings[0].embedding_id)]
         ) for i in embeddings
     ]
-
-
 
 
 def generate_embeddings(
