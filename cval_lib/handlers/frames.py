@@ -48,7 +48,6 @@ class Frames(AbstractHandler):
         Based on: FrameModel(img_raw: bytes, img_external_id: str)
         :param frames: Image values in bytes
         """
-        print(tuple(map(lambda x: ('uploaded_files', x.img_raw), frames))[0])
         self._post(
             self.route + f'{self.part_of_dataset}/blob',
             files=tuple(map(lambda x: ('uploaded_files', x.img_raw), frames)),
