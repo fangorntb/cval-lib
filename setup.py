@@ -20,5 +20,3 @@ setup(
         'loguru==0.7.0',
     ]
 )
-
-print(1 <= 2)

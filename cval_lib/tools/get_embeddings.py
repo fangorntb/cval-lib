@@ -2,11 +2,12 @@ import glob
 import os
 import random
 import re
+import shutil
 import uuid
 from collections import Counter
 from pathlib import Path
 from typing import Tuple, Union
-
+from contextlib import suppress
 from cval_lib.models.detection import FramePrediction, BBoxScores
 from cval_lib.models.embedding import FrameEmbeddingModel, EmbeddingModel
 import PIL.Image as Image
@@ -88,12 +89,14 @@ def save_bbox_for_cluster(
         path_to_images: Union[Path, str, os.PathLike],
         pattern: str = '*.jpg',
 ) -> Path:
+    with suppress(Exception):
+        shutil.rmtree(Path(path_to_bboxes) / 'crops')
     os.makedirs(Path(path_to_bboxes) / 'crops', exist_ok=True)
     for path_to_bbox in map(
             lambda x: Path(path_to_bboxes) / x,
             os.listdir(path_to_bboxes)
     ):
-        if os.path.exists(path_to_bbox):
+        if os.path.exists(path_to_bbox) and Path(path_to_bbox).is_file():
             with open(path_to_bbox) as f:
                 bbox = f.readlines()
             image = Image.open(
@@ -330,6 +333,7 @@ def train_siam(
         log_train(*train_epoch_siam(model, device, train_loader, optimizer), epoch)
         torch.save(model.state_dict(), 'end_pool.pt')
         scheduler.step()
+    return model
 
 
 def get_embeddings(
@@ -352,17 +356,7 @@ def get_embeddings(
     )
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle, )
     embs, files = generate_embeddings(model, test_loader, device)
-    embeddings = [
-        FrameEmbeddingModel(frame_id=img, embeddings=[EmbeddingModel(embedding_id=str(uuid.uuid4()), embedding=emb)])
-        for emb, img in zip(embs, map(lambda x: x.split('__')[0], files))
-    ]
-
-    return embeddings, [
-        FramePrediction(
-            frame_id=i.frame_id,
-            predictions=[BBoxScores(embedding_id=i.embeddings[0].embedding_id)]
-        ) for i in embeddings
-    ]
+    return embs, files
 
 
 def generate_embeddings(
@@ -378,6 +372,15 @@ def generate_embeddings(
             emb_batch = model.forward_once(img).detach().cpu().flatten(start_dim=1)
             emb.append(emb_batch)
             files.extend(frames)
-    emb = torch.cat(emb, 0)
-    emb = normalize(emb)
-    return emb, files
+    embs = torch.cat(emb, 0)
+    embs = normalize(embs)
+    embeddings = [
+        FrameEmbeddingModel(frame_id=img, embeddings=[EmbeddingModel(embedding_id=str(uuid.uuid4()), embedding=emb)])
+        for emb, img in zip(embs.tolist(), map(lambda x: Path(x.split('__')[0]).name, files))
+    ]
+    return embeddings, [
+        FramePrediction(
+            frame_id=i.frame_id,
+            predictions=[BBoxScores(embedding_id=i.embeddings[0].embedding_id)]
+        ) for i in embeddings
+    ]

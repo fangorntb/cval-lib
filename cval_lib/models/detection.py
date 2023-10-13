@@ -68,7 +68,7 @@ class FramePrediction(BaseModel):
     :param frame_id: id of the frame
     :param predictions: bbox scores
     """
-    frame_id: str = Field(max_length=32)
+    frame_id: str = Field(max_length=128)
     predictions: Optional[List[BBoxScores]]
 
 

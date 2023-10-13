@@ -21,6 +21,7 @@ from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 
 from cval_lib.models._base import fields
+from cval_lib.models.detection import FramePrediction
 
 
 @fields(
@@ -38,7 +39,7 @@ class EmbeddingModel(BaseModel):
 )
 class FrameEmbeddingModel(BaseModel):
     embeddings: List[EmbeddingModel]
-    frame_id: str = Field(max_length=32)
+    frame_id: str
 
 
 @fields(
