@@ -21,10 +21,19 @@ from pydantic import BaseModel, Field
 
 from cval_lib.models._base import ExecModel, fields
 
+@fields(
+    'cloud_storage_id: Optional[str]',
+    'dataset_name_in_storage: Optional[str]',
+)
+class StorageConfig(BaseModel):
+    cloud_storage_id: str | None
+    dataset_name_in_storage: str | None
+
 
 @fields(
     'dataset_name: Optional[str]',
     'dataset_description: Optional[str]',
+    'storage_config: Optional[StorageConfig]'
 )
 class DatasetModel(ExecModel):
     """
@@ -35,6 +44,7 @@ class DatasetModel(ExecModel):
     """
     dataset_name: Optional[str] = Field(max_length=32, )
     dataset_description: Optional[str] = Field(max_length=256, )
+    storage_config: StorageConfig | None = StorageConfig()
 
     def send(self, user_api_key: str, dataset_id: str = None, sync: bool = True):
         return self._send(

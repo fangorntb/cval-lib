@@ -10,6 +10,7 @@ from cval_lib.handlers.annotation import (
     Detection as DetectionAnnotation,
     Classification as ClassificationAnnotation,
 )
+from cval_lib.handlers.storage import Storage
 from cval_lib.utils.base_conn import BaseConn
 
 
@@ -68,3 +69,5 @@ class CVALConnection(BaseConn):
     def classification(self) -> Classification:
         return Classification(self.session)
 
+    def storage(self, _id: str = None):
+        return Storage(self.session, _id)

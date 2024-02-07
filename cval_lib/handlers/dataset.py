@@ -126,3 +126,7 @@ class Dataset(AbstractHandler):
         self._construct_request(name, description)
         self._get(url=self.route + 's/all', params=self.dataset_request.dict())
         return [DatasetResponse.parse_obj(i) for i in self.send().json()]
+
+    def synchronize(self, _id):
+        self._put(f"{self.route}/{_id}/synchronize")
+        return self.send()
