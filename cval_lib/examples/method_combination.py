@@ -55,7 +55,7 @@ def get_embeddings(_frames: list[str], _predictions, emb_sz=500):
 
 predictions = get_scores(500, 14, 1)
 
-USER_API_KEY = 'USER_API_KEY'
+USER_API_KEY = ...
 detector = CVALConnection(USER_API_KEY)
 ds_id = detector.dataset().create(name='asd', description='1a2')
 print(ds_id)
@@ -97,7 +97,7 @@ task_id = detector.detection().on_premise_sampling(
 
 result = None
 sleep_sec = 1
-while result is None:
+while result is None or type(result) is dict:
     result = detector.result().get(task_id).result
     print(f'Polling... {sleep_sec}')
     sleep(sleep_sec)

@@ -9,7 +9,7 @@ class BaseConn:
 
     def __init__(self, user_api_key: str, sync: bool = True):
         self.session = Session()
-        self.session.headers = {'user_api_key': user_api_key}
+        self.session.headers = {'Authorization': f"user_api_key:{user_api_key}"}
         self._active_connections.append(self)
         self.sync = sync
         atexit.register(self.close_all)
