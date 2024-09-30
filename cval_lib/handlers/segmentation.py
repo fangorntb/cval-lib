@@ -21,12 +21,14 @@ from cval_lib.models.result import ResultResponse
 
 
 class Segmentation(BasedOnJSON):
-    def saas(
+    def saas_sampling(
             self,
             dataset_id: str,
             model: Literal['unet', 'yolo'],
             model_id: str | None = None,
             new_model_id: str | None = None,
+            method: Literal['minmax', 'maximin', 'minmin', 'maxmax'] | None = 'minmin',
+            num_epochs: int = 100,
     ) -> ResultResponse:
         return self.__processing__(
             f'/dataset/sampling/{dataset_id}/segmentation',
@@ -35,6 +37,24 @@ class Segmentation(BasedOnJSON):
             json={
                 'model': model,
                 'model_id': model_id,
-                'new_model_id': new_model_id
+                'new_model_id': new_model_id,
+                'method': method,
+                'num_epochs': num_epochs
+            },
+        )
+
+    def saas_test(
+            self,
+            dataset_id: str,
+            model: Literal['unet', 'yolo'],
+            model_id: str | None = None,
+    ) -> ResultResponse:
+        return self.__processing__(
+            f'/dataset/test/{dataset_id}/segmentation',
+            self._post,
+            parser='ResultResponse',
+            json={
+                'model': model,
+                'model_id': model_id,
             },
         )

@@ -11,6 +11,7 @@ from cval_lib.handlers.annotation import (
     Classification as ClassificationAnnotation,
     Segmentation as SegmentationAnnotation,
 )
+from cval_lib.handlers.segmentation import Segmentation
 from cval_lib.handlers.storage import Storage
 from cval_lib.utils.base_conn import BaseConn
 
@@ -74,7 +75,18 @@ class CVALConnection(BaseConn):
         """
         return SegmentationAnnotation(self.session, dataset_id)
 
+    def segmentation(self) -> Segmentation:
+        """
+        This method can be used to call a segmentation sampling or test
+        :return: Segmentation
+        """
+        return Segmentation(self.session)
+
     def classification(self) -> Classification:
+        """
+        This method can be used to call a classification sampling or test
+        :return: Classification
+        """
         return Classification(self.session)
 
     def storage(self, _id: str = None):

@@ -121,10 +121,14 @@ class Segmentation(AbstractAnnotation):
             annotation,
         )
 
-    def get(self):
+    def _get_ann(self, part_of_dataset: str, limit=None):
         return self.__processing__(
-            f'/dataset/{self.dataset_id}/annotation/{self.tpe}',
+            f'/dataset/{self.dataset_id}/{part_of_dataset}/annotation/{self.tpe}',
             self._get,
             None,
         )
+
+    def get(self, training: bool = False, test: bool = False, validation: bool = False):
+        return tuple(map(lambda x: self._get_ann(x[0]), filter(lambda x: x[1], self._gt(training, test, validation))))
+
 

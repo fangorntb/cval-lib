@@ -157,13 +157,13 @@ class Mask(BaseModel):
     mask: List[float]
 
 
-class ImageAnnotation(BaseModel):
+class ImageSegAnnotation(BaseModel):
     image_id: str
     masks: List[Mask] | List | None = None
 
 
 class PartitionSegmentationAnnotation(BaseModel):
-    __root__: List[ImageAnnotation]
+    __root__: List[ImageSegAnnotation]
 
 
 class SegmentationAnnotation(BaseModel):
