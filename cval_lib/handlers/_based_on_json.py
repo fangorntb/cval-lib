@@ -22,7 +22,7 @@ class BasedOnJSON(AbstractHandler):
             json: BaseModel() = None,
             params: dict = None,
     ) -> BaseModel():
-        method(url=self.route + sub_router, json=json.dict() if json is not None else {}, params=params)
+        method(url=self.route + sub_router, json=(json.dict() if type(json) is not dict else json) if json is not None else {}, params=params)
         if parser is None:
             return self.send().json()
         elif parser.__name__ == 'ResultResponse':

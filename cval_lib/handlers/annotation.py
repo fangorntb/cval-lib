@@ -7,7 +7,9 @@ from cval_lib.handlers._based_on_json import BasedOnJSON
 from cval_lib.models.annotation import (
     DetectionAnnotationCOCO,
     ClassificationLabels,
-    LabelsResponse, Label,
+    LabelsResponse,
+    Label,
+    SegmentationAnnotation
 )
 
 
@@ -106,3 +108,23 @@ class Classification(AbstractAnnotation):
 
     def get(self, training: bool = False, test: bool = False, validation: bool = False):
         return tuple(map(lambda x: self._get_ann(x[0]), filter(lambda x: x[1], self._gt(training, test, validation))))
+
+
+class Segmentation(AbstractAnnotation):
+    tpe = 'segmentation'
+
+    def create(self, annotation: SegmentationAnnotation):
+        return self.__processing__(
+            f'/dataset/{self.dataset_id}/annotation/{self.tpe}',
+            self._post,
+            None,
+            annotation,
+        )
+
+    def get(self):
+        return self.__processing__(
+            f'/dataset/{self.dataset_id}/annotation/{self.tpe}',
+            self._get,
+            None,
+        )
+

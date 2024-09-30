@@ -6,6 +6,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from cval_lib.models._base import ExecModel, fields
+from pydantic import BaseModel
 
 
 @fields(
@@ -19,7 +20,6 @@ class Label(BaseModel):
     """
     img_external_id: str
     img_label: int
-
 
 
 @fields(
@@ -150,3 +150,23 @@ class LabelsResponse(BaseModel):
     dataset_id: str
     labels_quantity: int
     labels: List[Label]
+
+
+class Mask(BaseModel):
+    label: int
+    mask: List[float]
+
+
+class ImageAnnotation(BaseModel):
+    image_id: str
+    masks: List[Mask] | List | None = None
+
+
+class PartitionSegmentationAnnotation(BaseModel):
+    __root__: List[ImageAnnotation]
+
+
+class SegmentationAnnotation(BaseModel):
+    train: Optional[PartitionSegmentationAnnotation] = None
+    test: Optional[PartitionSegmentationAnnotation] = None
+    val: Optional[PartitionSegmentationAnnotation] = None

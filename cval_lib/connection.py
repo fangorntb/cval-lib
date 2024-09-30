@@ -9,6 +9,7 @@ from cval_lib.handlers.frames import Frames
 from cval_lib.handlers.annotation import (
     Detection as DetectionAnnotation,
     Classification as ClassificationAnnotation,
+    Segmentation as SegmentationAnnotation,
 )
 from cval_lib.handlers.storage import Storage
 from cval_lib.utils.base_conn import BaseConn
@@ -65,6 +66,13 @@ class CVALConnection(BaseConn):
         :return: DetectionAnnotation
         """
         return ClassificationAnnotation(self.session, dataset_id)
+
+    def seg_annotation(self, dataset_id: str) -> SegmentationAnnotation:
+        """
+        This method can be used for annotation uploading and get for segmentation tasks
+        :return: DetectionAnnotation
+        """
+        return SegmentationAnnotation(self.session, dataset_id)
 
     def classification(self) -> Classification:
         return Classification(self.session)
