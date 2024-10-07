@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='cval-lib',
-    version='0.0.2.54',
+    version='0.0.2.55',
     description='python computer vision active learning library',
     author='DGQ | Cyrill Belyakov',
     author_email='',

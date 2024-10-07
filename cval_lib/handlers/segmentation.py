@@ -27,7 +27,7 @@ class Segmentation(BasedOnJSON):
             model: Literal['unet', 'yolo'],
             model_id: str | None = None,
             new_model_id: str | None = None,
-            method: Literal['minmax', 'maximin', 'minmin', 'maxmax'] | None = 'minmin',
+            method: Literal['cval-custom'] | None = 'cval-custom',
             num_epochs: int = 100,
     ) -> ResultResponse:
         return self.__processing__(
