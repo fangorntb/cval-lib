@@ -32,15 +32,17 @@ class Frames(AbstractHandler):
                     stream=True,
                     params={'limit': limit},
                 ), self.send().json())[-1]
-        else:
-            return [
-                (self._get(
-                    self.route + f'{part_of_dataset}/frames/meta',
+        
+
+    def hash(self, ):
+        if self.part_of_dataset is not None:
+            return (
+                self._get(
+                    self.route + f'{self.part_of_dataset}/frames/hash',
                     stream=True,
-                    params={'limit': limit},
-                ), self.send().json())[-1]
-                for part_of_dataset in ('test', 'training', 'validation')
-            ]
+                ), self.send().json()
+            )[-1]
+        
 
     def create_fb(self, frames: Iterable[FrameModel]):
         """
